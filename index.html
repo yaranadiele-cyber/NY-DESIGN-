@@ -183,8 +183,8 @@ section{position:relative;z-index:1;}
   padding:2.5rem 2rem;text-align:center;
 }
 .service-icon{
-  width:100%;height:180px;margin:0 auto 1.5rem;
-  background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.05));
+  width:100%;height:220px;margin:0 auto 1.5rem;
+  background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(201,168,76,.03));
   border:1px solid var(--border-glass);border-radius:16px;
   display:flex;align-items:center;justify-content:center;
   font-size:2.5rem;overflow:hidden;
@@ -1250,7 +1250,7 @@ async function buildServices() {
     <div class="glass service-card">
       <div class="service-icon">
         ${s.image_url
-          ? `<img src="${s.image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`
+          ? `<img src="${s.image_url}" style="width:100%;height:100%;object-fit:contain;border-radius:12px;padding:6px;background:rgba(0,0,0,.15);">`
           : '⚡'}
       </div>
       <div class="service-name">${s.name}</div>
