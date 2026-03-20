@@ -842,33 +842,33 @@ footer{
 <section id="agendamento" class="py">
   <div class="container">
     <div class="section-header">
-      <span class="section-tag">✦ Vamos conversar</span>
-      <h2 class="section-title">Agende sua <span class="gold-text">consultoria gratuita</span></h2>
-      <p class="section-desc">Sem compromisso. Vamos entender seu projeto e ver como posso ajudar.</p>
+      <span class="section-tag" id="contact-tag">✦ Vamos conversar</span>
+      <h2 class="section-title" id="contact-title">Agende sua <span class="gold-text">consultoria gratuita</span></h2>
+      <p class="section-desc" id="contact-desc">Sem compromisso. Vamos entender seu projeto e ver como posso ajudar.</p>
     </div>
     <div class="schedule-card glass">
-      <p style="font-size:.95rem;color:var(--text-muted);line-height:1.8;">
+      <p style="font-size:.95rem;color:var(--text-muted);line-height:1.8;" id="contact-text">
         Clique abaixo para me chamar no WhatsApp. Respondo rapidamente e posso fazer uma chamada de vídeo para entender melhor seu projeto.
       </p>
-      <a href="https://wa.me/5582999999999?text=Olá!%20Vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20um%20orçamento." 
-         target="_blank" class="whatsapp-btn">
+      <a href="#" id="whatsapp-btn" target="_blank" class="whatsapp-btn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Chamar no WhatsApp
+        <span id="whatsapp-btn-text">Chamar no WhatsApp</span>
       </a>
 
       <div class="pix-section">
-        <p style="font-size:.85rem;color:var(--text-muted);">Formas de pagamento aceitas</p>
-        <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+        <p style="font-size:.85rem;color:var(--text-muted);" id="payment-label">Formas de pagamento aceitas</p>
+        <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;" id="payment-badges">
           <div class="pix-badge">
             <svg width="16" height="16" viewBox="0 0 512 512" fill="currentColor"><path d="M242.4 292.5C247.8 287.1 257.1 287.1 262.5 292.5L339.6 369.6C353.8 383.8 372.8 392 392.9 392H404l-93.1 93.1c-49.96 49.96-131 49.96-180.9 0l-94.3-94.2 85.3-.8c20.2-.2 39.2-8.4 53.4-22.6L242.4 292.5zM242.4 219.5L169.3 146.4C155.1 132.2 136.1 124 116 124H12.03L106.3 29.7c49.96-49.96 131-49.96 180.9 0l93.2 93.2h-8.3c-20.1 0-39.1 8.2-53.3 22.4L242.4 219.5zM499.7 220.8l-62.6-62.6c.8 0 1.6 .1 2.4 .1h34.1c11.3 0 20.4 9.1 20.4 20.4v44.1zM12.53 291.2l62.6 62.6c-.8 0-1.6-.1-2.4-.1H38.68c-11.3 0-20.4-9.1-20.4-20.4V291.2z"/></svg>
             PIX
           </div>
-          <div class="pix-badge" style="border-color:rgba(201,168,76,.3);color:var(--gold-light);">💳 Cartão</div>
-          <div class="pix-badge" style="border-color:rgba(201,168,76,.3);color:var(--gold-light);">🏦 Transferência</div>
+          <div class="pix-badge" style="border-color:rgba(201,168,76,.3);color:var(--gold-light);" id="badge-cartao">💳 Cartão</div>
+          <div class="pix-badge" style="border-color:rgba(201,168,76,.3);color:var(--gold-light);" id="badge-transferencia">🏦 Transferência</div>
         </div>
         <p style="font-size:.8rem;color:var(--text-muted);margin-top:1rem;">
-          Chave PIX: <strong style="color:var(--gold-light);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81f2e4f4c1e4ece0e8edafe2eeec">[email&#160;protected]</a></strong>
+          Chave PIX: <strong style="color:var(--gold-light);" id="pix-key-display">contato@ndesignweb.com</strong>
         </p>
+        <p style="font-size:.8rem;color:var(--text-muted);margin-top:.5rem;" id="pix-msg-display"></p>
       </div>
     </div>
   </div>
@@ -1212,6 +1212,21 @@ async function initCounters() {
   const pixEl = document.getElementById('pix-key-display');
   if(pixEl) pixEl.textContent = s.pix_key||'contato@ndesignweb.com';
 
+  // Seção Contato / Agendamento
+  const setText = (id, val) => { const el=document.getElementById(id); if(el&&val) el.textContent=val; };
+  const setHtml = (id, val) => { const el=document.getElementById(id); if(el&&val) el.innerHTML=val; };
+  setText('contact-tag',    s.contact_tag);
+  setHtml('contact-title',  s.contact_title);
+  setText('contact-desc',   s.contact_desc);
+  setText('contact-text',   s.contact_text);
+  setText('whatsapp-btn-text', s.whatsapp_btn_text || 'Chamar no WhatsApp');
+  setText('payment-label',  s.payment_label);
+  setText('pix-msg-display', s.pixmsg);
+
+  // Esconder badges de pagamento se desativados
+  if(s.show_cartao === 'false') { const el=document.getElementById('badge-cartao'); if(el) el.style.display='none'; }
+  if(s.show_transferencia === 'false') { const el=document.getElementById('badge-transferencia'); if(el) el.style.display='none'; }
+
   // Seção Sobre
   const photo = s.photo_url||'';
   if(photo) {
@@ -1220,12 +1235,9 @@ async function initCounters() {
     if(img) { img.src = photo; img.style.display = 'block'; }
     if(emoji) emoji.style.display = 'none';
   }
-  const aboutTitle = document.getElementById('about-title');
-  if(aboutTitle && s.about_title) aboutTitle.innerHTML = s.about_title;
-  const bio1 = document.getElementById('about-bio1');
-  if(bio1 && s.bio) bio1.textContent = s.bio;
-  const bio2 = document.getElementById('about-bio2');
-  if(bio2) bio2.textContent = s.bio2||'';
+  if(s.about_title) document.getElementById('about-title').innerHTML = s.about_title;
+  if(s.bio) document.getElementById('about-bio1').textContent = s.bio;
+  if(document.getElementById('about-bio2')) document.getElementById('about-bio2').textContent = s.bio2||'';
 }
 
 // ===================== SERVIÇOS =====================

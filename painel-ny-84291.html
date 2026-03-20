@@ -252,6 +252,7 @@ tr:hover td{background:rgba(201,168,76,.04);}
       <div class="nav-section">Configurações</div>
       <div class="nav-item" onclick="goPage('perfil',this)"><span class="icon">👤</span> Perfil & Links</div>
       <div class="nav-item" onclick="goPage('pagamentos',this)"><span class="icon">💳</span> Pagamento</div>
+      <div class="nav-item" onclick="goPage('contato',this)"><span class="icon">📞</span> Contato & Agendamento</div>
       <div class="nav-item" onclick="window.open('index.html','_blank')"><span class="icon">👁️</span> Ver Site</div>
     </nav>
     <div class="sidebar-footer">
@@ -377,9 +378,36 @@ tr:hover td{background:rgba(201,168,76,.04);}
         <div class="section-title">💳 Formas de Pagamento</div>
         <div class="field"><label>Chave PIX</label><input type="text" id="cfg-pix" placeholder="CPF, CNPJ, e-mail ou telefone"></div>
         <div class="field"><label>Nome exibido no PIX</label><input type="text" id="cfg-pixname" placeholder="N Design Web"></div>
-        <div class="field"><label>Mensagem de pagamento</label><textarea id="cfg-pixmsg" rows="3" placeholder="Após confirmação..."></textarea></div>
+        <div class="field"><label>Mensagem abaixo do PIX</label><textarea id="cfg-pixmsg" rows="2" placeholder="Após confirmação..."></textarea></div>
+        <div class="field-row">
+          <div class="field"><label>Mostrar badge Cartão?</label>
+            <select id="cfg-show-cartao"><option value="true">Sim</option><option value="false">Não</option></select>
+          </div>
+          <div class="field"><label>Mostrar badge Transferência?</label>
+            <select id="cfg-show-transferencia"><option value="true">Sim</option><option value="false">Não</option></select>
+          </div>
+        </div>
         <div style="margin-top:1.5rem;">
           <button class="btn-primary" onclick="savePagamentos()">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTATO & AGENDAMENTO -->
+    <div class="page" id="page-contato">
+      <div class="config-wrap">
+        <div class="section-title">📞 Seção Contato & Agendamento</div>
+        <div class="field-row">
+          <div class="field"><label>Tag acima do título (ex: ✦ Vamos conversar)</label><input type="text" id="cfg-contact-tag" placeholder="✦ Vamos conversar"></div>
+          <div class="field"><label>Texto do botão WhatsApp</label><input type="text" id="cfg-wa-btn-text" placeholder="Chamar no WhatsApp"></div>
+        </div>
+        <div class="field"><label>Título da seção</label><input type="text" id="cfg-contact-title" placeholder="Agende sua consultoria gratuita"></div>
+        <div class="field"><label>Subtítulo (abaixo do título)</label><input type="text" id="cfg-contact-desc" placeholder="Sem compromisso. Vamos entender seu projeto..."></div>
+        <div class="field"><label>Texto do card (parágrafo principal)</label><textarea id="cfg-contact-text" rows="3" placeholder="Clique abaixo para me chamar no WhatsApp..."></textarea></div>
+        <div class="field"><label>Título das formas de pagamento</label><input type="text" id="cfg-payment-label" placeholder="Formas de pagamento aceitas"></div>
+        <div class="field"><label>Mensagem da chave PIX (aparece no rodapé do card)</label><input type="text" id="cfg-pix-msg2" placeholder="Após confirmação do pagamento, projeto iniciado em 24h."></div>
+        <div style="margin-top:1.5rem;">
+          <button class="btn-primary" onclick="saveContato()">Salvar</button>
         </div>
       </div>
     </div>
@@ -638,6 +666,14 @@ async function getSettings() {
       pix: s.pix_key||'contato@ndesignweb.com',
       pixname: s.pixname||'N Design Web',
       pixmsg: s.pixmsg||'Após confirmação do pagamento, projeto iniciado em 24h.',
+      show_cartao: s.show_cartao||'true',
+      show_transferencia: s.show_transferencia||'true',
+      contact_tag: s.contact_tag||'',
+      contact_title: s.contact_title||'',
+      contact_desc: s.contact_desc||'',
+      contact_text: s.contact_text||'',
+      whatsapp_btn_text: s.whatsapp_btn_text||'',
+      payment_label: s.payment_label||'',
     };
     return _cache.settings;
   } catch(e) {
@@ -1014,6 +1050,8 @@ async function loadPagForm() {
   document.getElementById('cfg-pix').value = s.pix||'';
   document.getElementById('cfg-pixname').value = s.pixname||'';
   document.getElementById('cfg-pixmsg').value = s.pixmsg||'';
+  document.getElementById('cfg-show-cartao').value = s.show_cartao||'true';
+  document.getElementById('cfg-show-transferencia').value = s.show_transferencia||'true';
 }
 
 async function savePagamentos() {
@@ -1021,12 +1059,43 @@ async function savePagamentos() {
     pix_key: document.getElementById('cfg-pix').value.trim(),
     pixname: document.getElementById('cfg-pixname').value.trim(),
     pixmsg: document.getElementById('cfg-pixmsg').value.trim(),
+    show_cartao: document.getElementById('cfg-show-cartao').value,
+    show_transferencia: document.getElementById('cfg-show-transferencia').value,
   };
   try {
     showToast('Salvando...');
     await Promise.all(Object.entries(fields).map(([k,v]) => sbUpsertSetting(k,v)));
     clearCache('settings');
     showToast('Configurações salvas!');
+  } catch(e) { showToast('Erro: '+e.message, true); }
+}
+
+async function loadContatoForm() {
+  const s = await getSettings();
+  document.getElementById('cfg-contact-tag').value   = s.contact_tag||'';
+  document.getElementById('cfg-contact-title').value = s.contact_title||'';
+  document.getElementById('cfg-contact-desc').value  = s.contact_desc||'';
+  document.getElementById('cfg-contact-text').value  = s.contact_text||'';
+  document.getElementById('cfg-wa-btn-text').value   = s.whatsapp_btn_text||'';
+  document.getElementById('cfg-payment-label').value = s.payment_label||'';
+  document.getElementById('cfg-pix-msg2').value      = s.pixmsg||'';
+}
+
+async function saveContato() {
+  const fields = {
+    contact_tag:       document.getElementById('cfg-contact-tag').value.trim(),
+    contact_title:     document.getElementById('cfg-contact-title').value.trim(),
+    contact_desc:      document.getElementById('cfg-contact-desc').value.trim(),
+    contact_text:      document.getElementById('cfg-contact-text').value.trim(),
+    whatsapp_btn_text: document.getElementById('cfg-wa-btn-text').value.trim(),
+    payment_label:     document.getElementById('cfg-payment-label').value.trim(),
+    pixmsg:            document.getElementById('cfg-pix-msg2').value.trim(),
+  };
+  try {
+    showToast('Salvando...');
+    await Promise.all(Object.entries(fields).map(([k,v]) => sbUpsertSetting(k,v)));
+    clearCache('settings');
+    showToast('Seção de contato salva!');
   } catch(e) { showToast('Erro: '+e.message, true); }
 }
 
@@ -1081,13 +1150,14 @@ async function goPage(id, el) {
   const pg = document.getElementById('page-'+id);
   if(pg) pg.classList.add('active');
   if(el) el.classList.add('active');
-  const titles = {dashboard:'Dashboard',projetos:'Projetos do Portfólio',servicos:'Serviços Oferecidos',depoimentos:'Depoimentos de Clientes',perfil:'Perfil & Links Sociais',pagamentos:'Formas de Pagamento'};
+  const titles = {dashboard:'Dashboard',projetos:'Projetos do Portfólio',servicos:'Serviços Oferecidos',depoimentos:'Depoimentos de Clientes',perfil:'Perfil & Links Sociais',pagamentos:'Formas de Pagamento',contato:'Contato & Agendamento'};
   document.getElementById('topbar-title').textContent = titles[id]||id;
   if(id==='projetos') await renderProjTable();
   if(id==='servicos') await renderServTable();
   if(id==='depoimentos') await renderDepTable();
   if(id==='perfil') await loadPerfilForm();
   if(id==='pagamentos') await loadPagForm();
+  if(id==='contato') await loadContatoForm();
   if(id==='dashboard') await renderDashboard();
 }
 
