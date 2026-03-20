@@ -377,8 +377,7 @@ tr:hover td{background:rgba(201,168,76,.04);}
         <div class="field"><label>Nome do Projeto</label><input type="text" id="proj-name" placeholder="Ex: Bella Vista"></div>
         <div class="field"><label>Categoria</label>
           <select id="proj-cat">
-            <option>Restaurante</option><option>Advocacia</option>
-            <option>Saúde</option><option>Beleza</option>
+            <option>Restaurante</option><option>Advocacia</option><option>Saúde & Beleza</option>
             <option>E-commerce</option><option>Fitness</option><option>Educação</option>
             <option>Institucional</option><option>Moda</option><option>Tecnologia</option><option>Outro</option>
           </select>
@@ -445,66 +444,168 @@ tr:hover td{background:rgba(201,168,76,.04);}
 
 <script>
 // ============================================================
-// STORAGE
+// SUPABASE
 // ============================================================
-const STORAGE_KEYS = {
-  projects: 'ny_projects',
-  services: 'ny_services',
-  reviews:  'ny_reviews',
-  settings: 'ny_settings',
-  activity: 'ny_activity',
-};
+const SUPA_URL = 'https://ewjluhwsrfpjdxlapfcu.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3amx1aHdzcmZwamR4bGFwZmN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODIyOTMsImV4cCI6MjA4OTM1ODI5M30.A8ihF9o5pHMJ1i84mHiTcHs_o6_Yc7ZMlPOGFXqWgQo';
 
-function load(key) {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEYS[key])) || null; } catch { return null; }
-}
-function save(key, data) {
-  localStorage.setItem(STORAGE_KEYS[key], JSON.stringify(data));
+async function sbFetch(table, params='') {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}${params}`, {
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    }
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
 }
 
-// Defaults
-function getProjects() {
-  return load('projects') || [
-    {id:1, title:'Bella Vista', tag:'Restaurante', url:'https://example.com', desc:'Site completo com cardápio online para restaurante italiano.', icon:'🍽️', status:'publicado'},
-    {id:2, title:'Dr. Mendes', tag:'Advocacia', url:'https://example.com', desc:'Site institucional para escritório de advocacia.', icon:'⚖️', status:'publicado'},
-    {id:3, title:'Clínica Aurora', tag:'Saúde & Beleza', url:'https://example.com', desc:'Landing page para clínica de estética.', icon:'💆', status:'publicado'},
-    {id:4, title:'Atelier Chic', tag:'E-commerce', url:'https://example.com', desc:'Loja online com catálogo e pagamento integrado.', icon:'👗', status:'publicado'},
-    {id:5, title:'Prime Gym', tag:'Fitness', url:'https://example.com', desc:'Site para academia com planos e galeria.', icon:'💪', status:'publicado'},
-  ];
+async function sbInsert(table, data) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify(data)
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
 }
-function getServices() {
-  return load('services') || [
-    {id:1, name:'Site Profissional', icon:'🌐', desc:'Sites modernos, rápidos e responsivos.', price:'A partir de R$ 800', prazo:'7–14 dias', active:true},
-    {id:2, name:'Logo & Identidade', icon:'🎨', desc:'Criação de logotipo com manual de marca.', price:'A partir de R$ 350', prazo:'3–5 dias', active:true},
-    {id:3, name:'Cartão de Visita', icon:'💳', desc:'Cartões digitais e impressos sofisticados.', price:'A partir de R$ 120', prazo:'1–2 dias', active:true},
-    {id:4, name:'Social Media', icon:'📱', desc:'Posts e artes para redes sociais.', price:'A partir de R$ 200', prazo:'Mensal', active:true},
-  ];
+
+async function sbUpdate(table, id, data) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify(data)
+  });
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
 }
-function getReviews() {
-  return load('reviews') || [
-    {id:1, client:'Ana Maria', company:'Clínica Aurora', stars:5, text:'O site superou todas as expectativas. Profissional, rápido e lindo!', status:'publicado'},
-    {id:2, client:'Ricardo Mendes', company:'Advocacia Mendes', stars:5, text:'Entrega rápida, comunicação excelente e resultado incrível.', status:'publicado'},
-    {id:3, client:'Carla Lima', company:'Atelier Chic', stars:5, text:'A logo ficou perfeita! Muito talento e atenção aos detalhes.', status:'pendente'},
-  ];
+
+async function sbDelete(table, id) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
+    method: 'DELETE',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  if(!res.ok) throw new Error(await res.text());
 }
-function getSettings() {
-  return load('settings') || {
-    name:'N Design Web', job:'Designer & Desenvolvedor Web', bio:'Especializado em criar experiências digitais premium.',
-    whatsapp:'5582999999999', email:'contato@ndesignweb.com',
-    linkedin:'https://linkedin.com', github:'https://github.com',
-    projcount:50, clientcount:40, years:5,
-    pix:'contato@ndesignweb.com', pixname:'N Design Web', pixmsg:'Após confirmação do pagamento, projeto iniciado em 24h.',
-  };
+
+async function sbUpsertSetting(key, value) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/settings`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify({key, value: String(value)})
+  });
+  if(!res.ok) throw new Error(await res.text());
 }
-function getActivity() { return load('activity') || []; }
+
+// Cache local para leitura rápida
+let _cache = { projects:null, services:null, reviews:null, settings:null };
+
+async function getProjects() {
+  if(_cache.projects) return _cache.projects;
+  try {
+    const data = await sbFetch('projects', '?order=created_at.desc');
+    _cache.projects = data.map(p => ({
+      id: p.id, title: p.name, tag: p.category, url: p.url,
+      desc: p.description, image: p.image_url, status: p.status
+    }));
+    return _cache.projects;
+  } catch(e) {
+    console.error('getProjects:', e);
+    return [];
+  }
+}
+
+async function getServices() {
+  if(_cache.services) return _cache.services;
+  try {
+    const data = await sbFetch('services', '?order=order_num.asc');
+    _cache.services = data.map(s => ({
+      id: s.id, name: s.name, desc: s.description,
+      image: s.image_url, price: s.price, prazo: s.prazo, active: s.active
+    }));
+    return _cache.services;
+  } catch(e) {
+    console.error('getServices:', e);
+    return [];
+  }
+}
+
+async function getReviews() {
+  if(_cache.reviews) return _cache.reviews;
+  try {
+    const data = await sbFetch('reviews', '?order=created_at.desc');
+    _cache.reviews = data.map(r => ({
+      id: r.id, client: r.client_name, company: r.company,
+      stars: r.stars, text: r.review_text, status: r.status
+    }));
+    return _cache.reviews;
+  } catch(e) {
+    console.error('getReviews:', e);
+    return [];
+  }
+}
+
+async function getSettings() {
+  if(_cache.settings) return _cache.settings;
+  try {
+    const rows = await sbFetch('settings', '');
+    const s = {};
+    rows.forEach(r => { s[r.key] = r.value; });
+    _cache.settings = {
+      name: s.name||'N Design Web',
+      job: s.job||'Designer & Desenvolvedor Web',
+      bio: s.bio||'',
+      whatsapp: s.whatsapp||'5582999999999',
+      email: s.email||'contato@ndesignweb.com',
+      linkedin: s.linkedin||'https://linkedin.com',
+      github: s.github||'https://github.com',
+      projcount: parseInt(s.projects_count||50),
+      clientcount: parseInt(s.clients_count||40),
+      years: parseInt(s.years_count||5),
+      pix: s.pix_key||'contato@ndesignweb.com',
+      pixname: s.pixname||'N Design Web',
+      pixmsg: s.pixmsg||'Após confirmação do pagamento, projeto iniciado em 24h.',
+    };
+    return _cache.settings;
+  } catch(e) {
+    console.error('getSettings:', e);
+    return { name:'N Design Web', whatsapp:'5582999999999', projcount:50, clientcount:40, years:5 };
+  }
+}
+
+function clearCache(key) {
+  if(key) _cache[key] = null;
+  else _cache = { projects:null, services:null, reviews:null, settings:null };
+}
+
 function addActivity(acao, item) {
-  const log = getActivity();
+  const log = JSON.parse(localStorage.getItem('ny_activity')||'[]');
   log.unshift({acao, item, date: new Date().toLocaleDateString('pt-BR')});
   if(log.length > 20) log.pop();
-  save('activity', log);
+  localStorage.setItem('ny_activity', JSON.stringify(log));
 }
-
-function nextId(arr) { return arr.length ? Math.max(...arr.map(x=>x.id||0))+1 : 1; }
+function getActivity() { return JSON.parse(localStorage.getItem('ny_activity')||'[]'); }
 
 // ============================================================
 // LOGIN
@@ -570,64 +671,56 @@ function goPage(id, el) {
 // ============================================================
 // DASHBOARD
 // ============================================================
-function renderDashboard() {
-  const projs = getProjects();
-  const servs = getServices();
-  const revs = getReviews();
+// ============================================================
+// DASHBOARD
+// ============================================================
+async function renderDashboard() {
+  const [projs, servs, revs] = await Promise.all([getProjects(), getServices(), getReviews()]);
   document.getElementById('stat-proj').textContent = projs.filter(p=>p.status==='publicado').length;
   document.getElementById('stat-serv').textContent = servs.filter(s=>s.active).length;
-  const pub = revs.filter(r=>r.status==='publicado').length;
-  const pend = revs.filter(r=>r.status==='pendente').length;
-  document.getElementById('stat-dep').textContent = pub;
-  document.getElementById('stat-pend').textContent = pend;
+  document.getElementById('stat-dep').textContent = revs.filter(r=>r.status==='publicado').length;
+  document.getElementById('stat-pend').textContent = revs.filter(r=>r.status==='pendente').length;
   const log = getActivity();
   const tbody = document.getElementById('activity-log');
-  if(log.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:2rem;">Nenhuma atividade ainda.</td></tr>';
-  } else {
-    tbody.innerHTML = log.slice(0,10).map(a => `
-      <tr><td>${a.acao}</td><td>${a.item}</td><td style="color:var(--muted);font-size:.8rem;">${a.date}</td></tr>
-    `).join('');
-  }
+  tbody.innerHTML = log.length === 0
+    ? '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:2rem;">Nenhuma atividade ainda.</td></tr>'
+    : log.slice(0,10).map(a => `<tr><td>${a.acao}</td><td>${a.item}</td><td style="color:var(--muted);font-size:.8rem;">${a.date}</td></tr>`).join('');
 }
 
 // ============================================================
 // PROJETOS CRUD
 // ============================================================
-function renderProjTable() {
-  const projs = getProjects();
+async function renderProjTable() {
   const tbody = document.getElementById('proj-table-body');
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Carregando...</td></tr>';
+  const projs = await getProjects();
   if(projs.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">🌐</div><p>Nenhum projeto ainda. Clique em "+ Novo Projeto".</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">🌐</div><p>Nenhum projeto ainda. Clique em &quot;+ Novo Projeto&quot;.</p></div></td></tr>';
     return;
   }
   tbody.innerHTML = projs.map(p => `
     <tr>
-      <td><div class="proj-icon-preview">${p.icon||'🌐'}</div></td>
+      <td>${p.image ? `<img src="${p.image}" style="width:60px;height:45px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">` : `<div class="proj-icon-preview">🌐</div>`}</td>
       <td><strong>${p.title}</strong></td>
       <td>${p.tag||'-'}</td>
-      <td><a href="${p.url}" target="_blank" style="color:var(--gold-light);font-size:.8rem;text-decoration:none;">${p.url ? shortenUrl(p.url) : '-'}</a></td>
+      <td><a href="${p.url||'#'}" target="_blank" style="color:var(--gold-light);font-size:.8rem;text-decoration:none;">${p.url ? shortenUrl(p.url) : '-'}</a></td>
       <td><span class="badge ${p.status==='publicado'?'badge-ok':'badge-off'}">${p.status==='publicado'?'Publicado':'Rascunho'}</span></td>
       <td class="action-btns">
-        <button class="btn-sm btn-edit" onclick="editProj(${p.id})">✏️ Editar</button>
-        <button class="btn-sm btn-del" onclick="delItem('projeto',${p.id})">🗑️</button>
+        <button class="btn-sm btn-edit" onclick="editProj('${p.id}')">✏️ Editar</button>
+        <button class="btn-sm btn-del" onclick="delItem('projeto','${p.id}')">🗑️</button>
       </td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
 function shortenUrl(url) {
   try { return new URL(url).hostname.replace('www.',''); } catch { return url.slice(0,30); }
 }
 
-function openModal(type) {
-  closeAllModals();
-  document.getElementById('modal-'+type).classList.add('open');
-}
+function openModal(type) { closeAllModals(); document.getElementById('modal-'+type).classList.add('open'); }
 
-function editProj(id) {
-  const projs = getProjects();
-  const p = projs.find(x=>x.id===id);
+async function editProj(id) {
+  const projs = await getProjects();
+  const p = projs.find(x=>x.id==id);
   if(!p) return;
   document.getElementById('modal-proj-title').textContent = 'Editar Projeto';
   document.getElementById('proj-edit-id').value = id;
@@ -635,130 +728,132 @@ function editProj(id) {
   document.getElementById('proj-cat').value = p.tag||'Outro';
   document.getElementById('proj-url').value = p.url||'';
   document.getElementById('proj-desc').value = p.desc||'';
-  document.getElementById('proj-icon').value = p.icon||'';
+  document.getElementById('proj-icon').value = p.image||'';
+  if(p.image) {
+    document.getElementById('proj-img-thumb').src = p.image;
+    document.getElementById('proj-img-preview').style.display = 'block';
+    document.getElementById('proj-upload-hint').style.display = 'none';
+  } else {
+    document.getElementById('proj-img-preview').style.display = 'none';
+    document.getElementById('proj-upload-hint').style.display = 'block';
+  }
   document.getElementById('proj-status').value = p.status||'publicado';
   openModal('projeto');
 }
 
-function saveProject() {
+async function saveProject() {
   const name = document.getElementById('proj-name').value.trim();
   if(!name) { showToast('Preencha o nome do projeto!', true); return; }
-  const editId = parseInt(document.getElementById('proj-edit-id').value||'0');
-  const projs = getProjects();
+  const editId = document.getElementById('proj-edit-id').value;
   const obj = {
-    id: editId || nextId(projs),
-    title: name,
-    tag: document.getElementById('proj-cat').value,
+    name, category: document.getElementById('proj-cat').value,
     url: document.getElementById('proj-url').value.trim(),
-    desc: document.getElementById('proj-desc').value.trim(),
-    icon: document.getElementById('proj-icon').value.trim() || '🌐',
+    description: document.getElementById('proj-desc').value.trim(),
+    image_url: document.getElementById('proj-icon').value || null,
     status: document.getElementById('proj-status').value,
   };
-  if(editId) {
-    const idx = projs.findIndex(x=>x.id===editId);
-    if(idx>=0) projs[idx] = obj; else projs.push(obj);
-    addActivity('Projeto editado', name);
-  } else {
-    projs.push(obj);
-    addActivity('Projeto adicionado', name);
-  }
-  save('projects', projs);
-  closeAllModals();
-  renderProjTable();
-  renderDashboard();
-  showToast(editId ? 'Projeto atualizado!' : 'Projeto adicionado!');
-  // Clear
-  document.getElementById('proj-edit-id').value = '';
-  document.getElementById('modal-proj-title').textContent = 'Novo Projeto';
+  try {
+    showToast('Salvando...');
+    if(editId) { await sbUpdate('projects', editId, obj); addActivity('Projeto editado', name); }
+    else { await sbInsert('projects', obj); addActivity('Projeto adicionado', name); }
+    clearCache('projects');
+    closeAllModals();
+    await renderProjTable(); await renderDashboard();
+    showToast(editId ? 'Projeto atualizado!' : 'Projeto adicionado!');
+    document.getElementById('proj-edit-id').value = '';
+    document.getElementById('modal-proj-title').textContent = 'Novo Projeto';
+    document.getElementById('proj-icon').value = '';
+    document.getElementById('proj-img-preview').style.display = 'none';
+    document.getElementById('proj-upload-hint').style.display = 'block';
+  } catch(e) { showToast('Erro: '+e.message, true); }
 }
 
 // ============================================================
 // SERVIÇOS CRUD
 // ============================================================
-function renderServTable() {
-  const servs = getServices();
+async function renderServTable() {
   const tbody = document.getElementById('serv-table-body');
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Carregando...</td></tr>';
+  const servs = await getServices();
   if(servs.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">⚡</div><p>Nenhum serviço ainda.</p></div></td></tr>';
     return;
   }
   tbody.innerHTML = servs.map(s => `
     <tr>
-      <td style="font-size:1.5rem;">${s.icon||'⚡'}</td>
+      <td>${s.image ? `<img src="${s.image}" style="width:56px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">` : `<span style="font-size:1.5rem;">⚡</span>`}</td>
       <td><strong>${s.name}</strong><br><span style="color:var(--muted);font-size:.78rem;">${(s.desc||'').slice(0,50)}...</span></td>
       <td style="color:var(--gold-light);">${s.price||'-'}</td>
       <td>${s.prazo||'-'}</td>
-      <td>
-        <label class="toggle">
-          <input type="checkbox" ${s.active?'checked':''} onchange="toggleServ(${s.id},this.checked)">
-          <span class="toggle-track"></span>
-        </label>
-      </td>
+      <td><label class="toggle"><input type="checkbox" ${s.active?'checked':''} onchange="toggleServ('${s.id}',this.checked)"><span class="toggle-track"></span></label></td>
       <td class="action-btns">
-        <button class="btn-sm btn-edit" onclick="editServ(${s.id})">✏️ Editar</button>
-        <button class="btn-sm btn-del" onclick="delItem('servico',${s.id})">🗑️</button>
+        <button class="btn-sm btn-edit" onclick="editServ('${s.id}')">✏️ Editar</button>
+        <button class="btn-sm btn-del" onclick="delItem('servico','${s.id}')">🗑️</button>
       </td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
-function editServ(id) {
-  const servs = getServices();
-  const s = servs.find(x=>x.id===id);
+async function editServ(id) {
+  const servs = await getServices();
+  const s = servs.find(x=>x.id==id);
   if(!s) return;
   document.getElementById('modal-serv-title').textContent = 'Editar Serviço';
   document.getElementById('serv-edit-id').value = id;
   document.getElementById('serv-name').value = s.name||'';
-  document.getElementById('serv-icon').value = s.icon||'';
+  document.getElementById('serv-icon').value = s.image||'';
   document.getElementById('serv-desc').value = s.desc||'';
   document.getElementById('serv-price').value = s.price||'';
   document.getElementById('serv-prazo').value = s.prazo||'';
+  if(s.image) {
+    document.getElementById('serv-img-thumb').src = s.image;
+    document.getElementById('serv-img-preview').style.display = 'block';
+    document.getElementById('serv-upload-hint').style.display = 'none';
+  } else {
+    document.getElementById('serv-img-preview').style.display = 'none';
+    document.getElementById('serv-upload-hint').style.display = 'block';
+  }
   openModal('servico');
 }
 
-function saveService() {
+async function saveService() {
   const name = document.getElementById('serv-name').value.trim();
   if(!name) { showToast('Preencha o nome do serviço!', true); return; }
-  const editId = parseInt(document.getElementById('serv-edit-id').value||'0');
-  const servs = getServices();
+  const editId = document.getElementById('serv-edit-id').value;
   const obj = {
-    id: editId || nextId(servs),
-    name,
-    icon: document.getElementById('serv-icon').value.trim() || '⚡',
-    desc: document.getElementById('serv-desc').value.trim(),
+    name, image_url: document.getElementById('serv-icon').value || null,
+    description: document.getElementById('serv-desc').value.trim(),
     price: document.getElementById('serv-price').value.trim(),
     prazo: document.getElementById('serv-prazo').value.trim(),
-    active: editId ? (servs.find(x=>x.id===editId)?.active ?? true) : true,
+    active: true,
   };
-  if(editId) {
-    const idx = servs.findIndex(x=>x.id===editId);
-    if(idx>=0) servs[idx] = obj; else servs.push(obj);
-    addActivity('Serviço editado', name);
-  } else {
-    servs.push(obj);
-    addActivity('Serviço adicionado', name);
-  }
-  save('services', servs);
-  closeAllModals();
-  renderServTable();
-  renderDashboard();
-  showToast(editId ? 'Serviço atualizado!' : 'Serviço adicionado!');
-  document.getElementById('serv-edit-id').value = '';
-  document.getElementById('modal-serv-title').textContent = 'Novo Serviço';
+  try {
+    showToast('Salvando...');
+    if(editId) { await sbUpdate('services', editId, obj); addActivity('Serviço editado', name); }
+    else { await sbInsert('services', obj); addActivity('Serviço adicionado', name); }
+    clearCache('services');
+    closeAllModals();
+    await renderServTable(); await renderDashboard();
+    showToast(editId ? 'Serviço atualizado!' : 'Serviço adicionado!');
+    document.getElementById('serv-edit-id').value = '';
+    document.getElementById('modal-serv-title').textContent = 'Novo Serviço';
+    document.getElementById('serv-icon').value = '';
+    document.getElementById('serv-img-preview').style.display = 'none';
+    document.getElementById('serv-upload-hint').style.display = 'block';
+  } catch(e) { showToast('Erro: '+e.message, true); }
 }
 
-function toggleServ(id, val) {
-  const servs = getServices();
-  const s = servs.find(x=>x.id===id);
-  if(s) { s.active = val; save('services', servs); renderDashboard(); }
+async function toggleServ(id, val) {
+  try { await sbUpdate('services', id, {active:val}); clearCache('services'); await renderDashboard(); }
+  catch(e) { showToast('Erro: '+e.message, true); }
 }
 
 // ============================================================
 // DEPOIMENTOS
 // ============================================================
-function renderDepTable() {
-  const revs = getReviews();
+async function renderDepTable() {
   const tbody = document.getElementById('dep-table-body');
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem;">Carregando...</td></tr>';
+  const revs = await getReviews();
   if(revs.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">💬</div><p>Nenhum depoimento ainda.</p></div></td></tr>';
     return;
@@ -771,68 +866,50 @@ function renderDepTable() {
       <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem;color:var(--muted);">${r.text}</td>
       <td><span class="badge ${r.status==='publicado'?'badge-ok':'badge-pending'}">${r.status==='publicado'?'Publicado':'Pendente'}</span></td>
       <td class="action-btns">
-        ${r.status==='pendente'?`<button class="btn-sm btn-approve" onclick="approveReview(${r.id})">✓ Aprovar</button>`:''}
-        <button class="btn-sm btn-del" onclick="delItem('depoimento',${r.id})">🗑️</button>
+        ${r.status==='pendente'?`<button class="btn-sm btn-approve" onclick="approveReview('${r.id}')">✓ Aprovar</button>`:''}
+        <button class="btn-sm btn-del" onclick="delItem('depoimento','${r.id}')">🗑️</button>
       </td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
-function approveReview(id) {
-  const revs = getReviews();
-  const r = revs.find(x=>x.id===id);
-  if(r) {
-    r.status='publicado';
-    save('reviews', revs);
-    renderDepTable();
-    renderDashboard();
-    addActivity('Depoimento aprovado', r.client);
+async function approveReview(id) {
+  try {
+    await sbUpdate('reviews', id, {status:'publicado'});
+    clearCache('reviews');
+    await renderDepTable(); await renderDashboard();
+    addActivity('Depoimento aprovado','');
     showToast('Depoimento aprovado e publicado!');
-  }
+  } catch(e) { showToast('Erro: '+e.message, true); }
 }
 
 // ============================================================
 // DELETE
 // ============================================================
 let _deleteTarget = null;
+function delItem(type, id) { _deleteTarget={type,id}; openModal('confirm'); }
 
-function delItem(type, id) {
-  _deleteTarget = {type, id};
-  openModal('confirm');
-}
-
-function confirmDelete() {
+async function confirmDelete() {
   if(!_deleteTarget) { closeAllModals(); return; }
-  const {type, id} = _deleteTarget;
-  if(type==='projeto') {
-    const arr = getProjects().filter(x=>x.id!==id);
-    save('projects', arr);
-    renderProjTable();
-    addActivity('Projeto excluído', '#'+id);
-    showToast('Projeto excluído!');
-  } else if(type==='servico') {
-    const arr = getServices().filter(x=>x.id!==id);
-    save('services', arr);
-    renderServTable();
-    addActivity('Serviço excluído', '#'+id);
-    showToast('Serviço excluído!');
-  } else if(type==='depoimento') {
-    const arr = getReviews().filter(x=>x.id!==id);
-    save('reviews', arr);
-    renderDepTable();
-    addActivity('Depoimento excluído', '#'+id);
-    showToast('Depoimento excluído!');
-  }
-  renderDashboard();
-  _deleteTarget = null;
-  closeAllModals();
+  const {type,id} = _deleteTarget;
+  const tableMap = {projeto:'projects',servico:'services',depoimento:'reviews'};
+  const cacheMap = {projeto:'projects',servico:'services',depoimento:'reviews'};
+  try {
+    await sbDelete(tableMap[type], id);
+    clearCache(cacheMap[type]);
+    if(type==='projeto') { await renderProjTable(); addActivity('Projeto excluído',''); }
+    else if(type==='servico') { await renderServTable(); addActivity('Serviço excluído',''); }
+    else if(type==='depoimento') { await renderDepTable(); addActivity('Depoimento excluído',''); }
+    await renderDashboard();
+    showToast('Item excluído!');
+  } catch(e) { showToast('Erro ao excluir: '+e.message, true); }
+  _deleteTarget=null; closeAllModals();
 }
 
 // ============================================================
 // PERFIL & PAGAMENTOS
 // ============================================================
-function loadPerfilForm() {
-  const s = getSettings();
+async function loadPerfilForm() {
+  const s = await getSettings();
   document.getElementById('cfg-name').value = s.name||'';
   document.getElementById('cfg-job').value = s.job||'';
   document.getElementById('cfg-bio').value = s.bio||'';
@@ -845,50 +922,102 @@ function loadPerfilForm() {
   document.getElementById('cfg-years').value = s.years||'';
 }
 
-function savePerfil() {
-  const s = getSettings();
-  s.name = document.getElementById('cfg-name').value.trim();
-  s.job = document.getElementById('cfg-job').value.trim();
-  s.bio = document.getElementById('cfg-bio').value.trim();
-  s.whatsapp = document.getElementById('cfg-wa').value.trim();
-  s.email = document.getElementById('cfg-email').value.trim();
-  s.linkedin = document.getElementById('cfg-linkedin').value.trim();
-  s.github = document.getElementById('cfg-github').value.trim();
-  s.projcount = parseInt(document.getElementById('cfg-projcount').value)||0;
-  s.clientcount = parseInt(document.getElementById('cfg-clientcount').value)||0;
-  s.years = parseInt(document.getElementById('cfg-years').value)||0;
-  save('settings', s);
-  addActivity('Perfil atualizado', s.name);
-  showToast('Perfil salvo com sucesso!');
+async function savePerfil() {
+  const fields = {
+    name: document.getElementById('cfg-name').value.trim(),
+    job: document.getElementById('cfg-job').value.trim(),
+    bio: document.getElementById('cfg-bio').value.trim(),
+    whatsapp: document.getElementById('cfg-wa').value.trim(),
+    email: document.getElementById('cfg-email').value.trim(),
+    linkedin: document.getElementById('cfg-linkedin').value.trim(),
+    github: document.getElementById('cfg-github').value.trim(),
+    projects_count: document.getElementById('cfg-projcount').value,
+    clients_count: document.getElementById('cfg-clientcount').value,
+    years_count: document.getElementById('cfg-years').value,
+  };
+  try {
+    showToast('Salvando...');
+    await Promise.all(Object.entries(fields).map(([k,v]) => sbUpsertSetting(k,v)));
+    clearCache('settings');
+    addActivity('Perfil atualizado', fields.name);
+    showToast('Perfil salvo!');
+  } catch(e) { showToast('Erro: '+e.message, true); }
 }
 
-function loadPagForm() {
-  const s = getSettings();
+async function loadPagForm() {
+  const s = await getSettings();
   document.getElementById('cfg-pix').value = s.pix||'';
   document.getElementById('cfg-pixname').value = s.pixname||'';
   document.getElementById('cfg-pixmsg').value = s.pixmsg||'';
 }
 
-function savePagamentos() {
-  const s = getSettings();
-  s.pix = document.getElementById('cfg-pix').value.trim();
-  s.pixname = document.getElementById('cfg-pixname').value.trim();
-  s.pixmsg = document.getElementById('cfg-pixmsg').value.trim();
-  save('settings', s);
-  addActivity('Pagamento atualizado', '');
-  showToast('Configurações salvas!');
+async function savePagamentos() {
+  const fields = {
+    pix_key: document.getElementById('cfg-pix').value.trim(),
+    pixname: document.getElementById('cfg-pixname').value.trim(),
+    pixmsg: document.getElementById('cfg-pixmsg').value.trim(),
+  };
+  try {
+    showToast('Salvando...');
+    await Promise.all(Object.entries(fields).map(([k,v]) => sbUpsertSetting(k,v)));
+    clearCache('settings');
+    showToast('Configurações salvas!');
+  } catch(e) { showToast('Erro: '+e.message, true); }
+}
+
+// ============================================================
+// IMAGE UPLOAD HANDLERS
+// ============================================================
+function handleProjImg(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const b64 = e.target.result;
+    document.getElementById('proj-icon').value = b64;
+    document.getElementById('proj-img-thumb').src = b64;
+    document.getElementById('proj-img-preview').style.display = 'block';
+    document.getElementById('proj-upload-hint').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleServImg(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const b64 = e.target.result;
+    document.getElementById('serv-icon').value = b64;
+    document.getElementById('serv-img-thumb').src = b64;
+    document.getElementById('serv-img-preview').style.display = 'block';
+    document.getElementById('serv-upload-hint').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ============================================================
+// NAVEGAÇÃO (async)
+// ============================================================
+async function goPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  if(el) el.classList.add('active');
+  const titles = {dashboard:'Dashboard',projetos:'Projetos do Portfólio',servicos:'Serviços Oferecidos',depoimentos:'Depoimentos de Clientes',perfil:'Perfil & Links Sociais',pagamentos:'Formas de Pagamento'};
+  document.getElementById('topbar-title').textContent = titles[id]||id;
+  if(id==='projetos') await renderProjTable();
+  if(id==='servicos') await renderServTable();
+  if(id==='depoimentos') await renderDepTable();
+  if(id==='perfil') await loadPerfilForm();
+  if(id==='pagamentos') await loadPagForm();
+  if(id==='dashboard') await renderDashboard();
 }
 
 // ============================================================
 // MODAIS
 // ============================================================
-function closeAllModals() {
-  document.querySelectorAll('.modal-bg').forEach(m => m.classList.remove('open'));
-}
-
-document.querySelectorAll('.modal-bg').forEach(bg => {
-  bg.addEventListener('click', e => { if(e.target === bg) closeAllModals(); });
-});
+function closeAllModals() { document.querySelectorAll('.modal-bg').forEach(m => m.classList.remove('open')); }
+document.querySelectorAll('.modal-bg').forEach(bg => { bg.addEventListener('click', e => { if(e.target===bg) closeAllModals(); }); });
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeAllModals(); });
 
 // ============================================================
@@ -905,13 +1034,9 @@ function showToast(msg, isError=false) {
 // ============================================================
 // INIT
 // ============================================================
-function initAdmin() {
-  renderDashboard();
-}
+async function initAdmin() { await renderDashboard(); }
 
-if(sessionStorage.getItem('ny_admin') === '1') {
-  initAdmin();
-}
+if(sessionStorage.getItem('ny_admin') === '1') { initAdmin(); }
 </script>
 </body>
 </html>
