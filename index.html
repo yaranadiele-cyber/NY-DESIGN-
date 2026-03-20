@@ -525,16 +525,23 @@ footer{
 .modal-frame{width:100%;height:400px;border-radius:12px;border:1px solid var(--border-glass);overflow:hidden;}
 .modal-frame iframe{width:100%;height:100%;border:none;}
 
-/* ADMIN LINK */
-.admin-link{
-  position:fixed;bottom:2rem;right:2rem;z-index:99;
-  width:48px;height:48px;border-radius:50%;
-  background:rgba(5,10,26,.9);border:1px solid var(--border-glass);
-  display:flex;align-items:center;justify-content:center;
-  text-decoration:none;font-size:1.2rem;
-  transition:all .3s;cursor:pointer;
+/* ADMIN LINK - hidden, moved to navbar */
+.admin-link{ display:none; }
+/* LOGIN NAV BTN */
+.nav-login-btn{
+  display:flex;align-items:center;gap:.45rem;
+  background:rgba(201,168,76,.08);
+  border:1px solid var(--border-glass);
+  color:var(--gold-light);padding:.45rem 1rem;border-radius:50px;
+  font-size:.78rem;font-weight:600;text-decoration:none;
+  letter-spacing:.04em;transition:all .3s;cursor:pointer;
+  white-space:nowrap;
 }
-.admin-link:hover{border-color:var(--gold);background:rgba(201,168,76,.1);}
+.nav-login-btn:hover{
+  border-color:var(--gold);background:rgba(201,168,76,.16);
+  box-shadow:0 0 14px rgba(201,168,76,.2);
+}
+.nav-login-btn svg{flex-shrink:0;}
 
 /* RESPONSIVE */
 @media(max-width:768px){
@@ -566,6 +573,10 @@ footer{
     <li><a href="#contato">Contato</a></li>
   </ul>
   <a href="#agendamento" class="nav-cta">Agendar</a>
+  <a href="painel-ny-84291.html" class="nav-login-btn" title="Área Administrativa">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+    Admin
+  </a>
   <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
@@ -855,7 +866,7 @@ footer{
           <div class="pix-badge" style="border-color:rgba(201,168,76,.3);color:var(--gold-light);">🏦 Transferência</div>
         </div>
         <p style="font-size:.8rem;color:var(--text-muted);margin-top:1rem;">
-          Chave PIX: <strong style="color:var(--gold-light);">seu@email.com</strong>
+          Chave PIX: <strong style="color:var(--gold-light);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81f2e4f4c1e4ece0e8edafe2eeec">[email&#160;protected]</a></strong>
         </p>
       </div>
     </div>
@@ -928,10 +939,9 @@ footer{
   </div>
 </div>
 
-<!-- ADMIN BUTTON -->
-<a href="admin.html" class="admin-link" title="Painel Admin">⚙️</a>
+<!-- ADMIN LINK (now in navbar) -->
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ===================== PARTÍCULAS =====================
 const canvas = document.getElementById('particles-canvas');
 const ctx = canvas.getContext('2d');
@@ -1042,32 +1052,86 @@ const heroStats = document.querySelector('.hero-stats');
 if(heroStats) observer.observe(heroStats);
 
 // ===================== COVERFLOW 3D =====================
-const cfCards = document.querySelectorAll('.project-card');
+// Carrega projetos do localStorage (gerenciados pelo admin)
+function loadProjectsFromStorage() {
+  const stored = localStorage.getItem('ny_projects');
+  if (stored) {
+    try { return JSON.parse(stored); } catch(e) {}
+  }
+  return [
+    {id:1, title:'Restaurante Bella Vista', url:'https://example.com', tag:'Restaurante', icon:'🍽️', desc:'Site completo com cardápio online, galeria e reservas para restaurante italiano.', status:'publicado'},
+    {id:2, title:'Advocacia Mendes', url:'https://example.com', tag:'Advocacia', icon:'⚖️', desc:'Site institucional elegante para escritório de advocacia com captação de leads.', status:'publicado'},
+    {id:3, title:'Clínica Aurora', url:'https://example.com', tag:'Saúde & Beleza', icon:'💆', desc:'Landing page sofisticada para clínica de estética com agendamento integrado.', status:'publicado'},
+    {id:4, title:'Atelier Chic', url:'https://example.com', tag:'E-commerce', icon:'👗', desc:'Loja online completa com catálogo, carrinho e pagamento integrado.', status:'publicado'},
+    {id:5, title:'Prime Gym', url:'https://example.com', tag:'Fitness', icon:'💪', desc:'Site moderno para academia com planos, galeria e botão de matrícula.', status:'publicado'},
+  ];
+}
+
+function buildCarousel() {
+  const projects = loadProjectsFromStorage().filter(p => p.status === 'publicado');
+  const stage = document.getElementById('carousel-stage');
+  if (!stage) return;
+  stage.innerHTML = '';
+  if (projects.length === 0) {
+    stage.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:4rem;">Nenhum projeto publicado ainda.</div>';
+    return;
+  }
+  projects.forEach((proj, i) => {
+    const card = document.createElement('div');
+    card.className = 'glass project-card';
+    card.dataset.idx = i;
+    card.innerHTML = `
+      <div class="project-preview">
+        <div class="project-preview-placeholder">${proj.icon||'🌐'}</div>
+      </div>
+      <div class="project-info">
+        <div class="project-tag">${proj.tag||''}</div>
+        <div class="project-title">${proj.title}</div>
+        <div class="project-desc">${proj.desc||''}</div>
+        <span class="project-link">Ver site →</span>
+      </div>`;
+    card.addEventListener('click', () => {
+      if (i === cfIdx) {
+        openProject(proj.title, proj.url, proj.tag||'');
+      } else {
+        cfGo(i);
+        cfResetAuto();
+      }
+    });
+    stage.appendChild(card);
+  });
+  window._cfProjects = projects;
+  window._cfCards = stage.querySelectorAll('.project-card');
+  cfBuildDots();
+  cfUpdate();
+  cfStartAuto();
+}
+
+const _cfProjectsData = () => window._cfProjects || [];
+const _cfCardsEl = () => window._cfCards || document.querySelectorAll('.project-card');
+
+const cfCards = {length:0};// placeholder, overridden by buildCarousel
 const cfDots = document.getElementById('carousel-dots');
-const cfData = [
-  {title:'Restaurante Bella Vista', url:'https://example.com', tag:'Restaurante'},
-  {title:'Advocacia Mendes', url:'https://example.com', tag:'Advocacia'},
-  {title:'Clínica Aurora', url:'https://example.com', tag:'Saúde & Beleza'},
-  {title:'Atelier Chic', url:'https://example.com', tag:'E-commerce'},
-  {title:'Prime Gym', url:'https://example.com', tag:'Fitness'},
-];
 let cfIdx = 0;
 let cfAuto;
 
 function cfBuildDots() {
-  if(!cfDots) return;
-  cfDots.innerHTML = '';
-  cfCards.forEach((_,i) => {
+  const dotsEl = document.getElementById('carousel-dots');
+  if(!dotsEl) return;
+  const cards = _cfCardsEl();
+  dotsEl.innerHTML = '';
+  Array.from(cards).forEach((_,i) => {
     const d = document.createElement('div');
     d.className = 'dot' + (i===0?' active':'');
     d.onclick = () => cfGo(i);
-    cfDots.appendChild(d);
+    dotsEl.appendChild(d);
   });
 }
 
 function cfUpdate() {
-  const total = cfCards.length;
-  cfCards.forEach((card, i) => {
+  const cards = _cfCardsEl();
+  const total = cards.length;
+  Array.from(cards).forEach((card, i) => {
     const diff = i - cfIdx;
     card.className = 'glass project-card';
     if(diff === 0) card.classList.add('active');
@@ -1081,7 +1145,8 @@ function cfUpdate() {
 }
 
 function cfGo(i) {
-  cfIdx = (i + cfCards.length) % cfCards.length;
+  const cards = _cfCardsEl();
+  cfIdx = (i + cards.length) % cards.length;
   cfUpdate();
 }
 
@@ -1098,22 +1163,10 @@ function cfResetAuto() {
   cfStartAuto();
 }
 
-// Clique — só abre modal se for o card ativo
-cfCards.forEach((card, i) => {
-  card.addEventListener('click', () => {
-    if(i === cfIdx) {
-      openProject(cfData[i].title, cfData[i].url, cfData[i].tag);
-    } else {
-      cfGo(i);
-      cfResetAuto();
-    }
-  });
-});
-
 // Swipe touch
-let touchStartX = 0;
 const stage = document.getElementById('carousel-stage');
 if(stage) {
+  let touchStartX = 0;
   stage.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive:true});
   stage.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - touchStartX;
@@ -1121,9 +1174,7 @@ if(stage) {
   });
 }
 
-cfBuildDots();
-cfUpdate();
-cfStartAuto();
+buildCarousel();
 
 // ===================== MODAL PROJETO =====================
 function openProject(title, url, tag) {
@@ -1180,13 +1231,4 @@ function toggleMenu() {
     links.style.display = 'none';
     navCta.style.display = 'none';
   } else {
-    links.style.cssText = 'display:flex;flex-direction:column;position:absolute;top:70px;left:0;right:0;background:rgba(5,10,26,.98);padding:2rem;gap:1.5rem;border-bottom:1px solid rgba(201,168,76,.2)';
-    navCta.style.display = 'none';
-  }
-}
-
-// Fechar modal com ESC
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
-</script>
-</body>
-</html>
+    links.style.cssText = 'display:flex;flex-direction:column;position:absolute;top:70px;left:0;right:0;background:rgba(5,10,26,.98);padding:2rem;gap:1.5rem

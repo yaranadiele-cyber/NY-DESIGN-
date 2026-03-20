@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel — NY Design Web</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#C9A84C;--gold-light:#E8C97A;--gold-dark:#8B6914;
+  --navy:#050A1A;--navy-mid:#0A1628;--navy-card:#0D1E35;
+  --glass:rgba(10,22,40,.8);--border:rgba(201,168,76,.18);
+  --text:#F0E9D6;--muted:#A89878;--danger:#E24B4A;--success:#1D9E75;
+  --sidebar-w:260px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'Outfit',sans-serif;background:var(--navy);color:var(--text);display:flex;min-height:100vh;}
+
+/* ===== LOGIN ===== */
+#login-screen{
+  position:fixed;inset:0;z-index:999;
+  background:var(--navy);display:flex;align-items:center;justify-content:center;
+  background-image:radial-gradient(ellipse at 60% 20%,rgba(201,168,76,.07) 0%,transparent 60%);
+}
+.login-box{
+  background:rgba(13,30,53,.92);border:1px solid var(--border);border-radius:24px;
+  padding:3rem 2.5rem;width:100%;max-width:420px;text-align:center;
+  backdrop-filter:blur(24px);
+  box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 60px rgba(201,168,76,.06);
+}
+.login-logo{font-size:2.8rem;margin-bottom:.5rem;}
+.login-title{font-size:1.5rem;font-weight:700;color:var(--gold-light);margin-bottom:.2rem;}
+.login-sub{font-size:.83rem;color:var(--muted);margin-bottom:2rem;}
+.input-wrap{position:relative;margin-bottom:1rem;text-align:left;}
+.input-wrap label{font-size:.78rem;color:var(--muted);display:block;margin-bottom:.4rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;}
+.input-wrap input{
+  width:100%;padding:.8rem 1rem;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--text);border-radius:10px;font-family:'Outfit',sans-serif;
+  font-size:.9rem;outline:none;transition:border-color .3s;
+}
+.input-wrap input:focus{border-color:var(--gold);}
+.show-pass{
+  position:absolute;right:.75rem;bottom:.8rem;background:none;border:none;
+  color:var(--muted);cursor:pointer;font-size:.85rem;
+}
+.btn-login{
+  width:100%;padding:.85rem;
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));
+  color:#0A0800;border:none;border-radius:50px;
+  font-weight:700;font-size:.95rem;cursor:pointer;font-family:'Outfit',sans-serif;
+  transition:box-shadow .3s,transform .3s;margin-top:.5rem;
+}
+.btn-login:hover{box-shadow:0 6px 30px rgba(201,168,76,.4);transform:translateY(-1px);}
+.login-error{color:#E24B4A;font-size:.8rem;margin-top:.75rem;display:none;padding:.6rem 1rem;background:rgba(226,75,74,.1);border-radius:8px;}
+
+/* ===== LAYOUT ===== */
+#admin-layout{display:none;flex:1;}
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:rgba(5,10,26,.97);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sidebar-header{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--border);}
+.sidebar-brand{font-size:1.05rem;font-weight:700;color:var(--gold-light);}
+.sidebar-brand span{font-size:.72rem;display:block;color:var(--muted);font-weight:400;letter-spacing:.04em;margin-top:2px;}
+.sidebar-nav{padding:1rem 0;flex:1;}
+.nav-section{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:.5rem 1.5rem;margin-top:.5rem;}
+.nav-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.72rem 1.5rem;cursor:pointer;
+  color:var(--muted);font-size:.86rem;font-weight:500;
+  transition:all .2s;border-left:3px solid transparent;
+}
+.nav-item:hover{color:var(--text);background:rgba(201,168,76,.05);}
+.nav-item.active{color:var(--gold-light);background:rgba(201,168,76,.09);border-left-color:var(--gold);}
+.nav-item .icon{font-size:1rem;width:20px;text-align:center;}
+.sidebar-footer{padding:1.25rem 1.5rem;}
+.btn-logout{
+  width:100%;padding:.6rem;
+  background:rgba(226,75,74,.1);border:1px solid rgba(226,75,74,.3);
+  color:#E24B4A;border-radius:8px;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;transition:all .3s;
+}
+.btn-logout:hover{background:rgba(226,75,74,.2);}
+
+/* ===== MAIN ===== */
+.main{flex:1;overflow-y:auto;background:var(--navy-mid);}
+.topbar{
+  position:sticky;top:0;z-index:10;
+  background:rgba(10,22,40,.97);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;
+}
+.topbar-title{font-size:1.05rem;font-weight:600;}
+.topbar-actions{display:flex;gap:.75rem;}
+.page{display:none;padding:2rem;}
+.page.active{display:block;}
+
+/* ===== STATS ===== */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin-bottom:2rem;}
+.stat-card{background:rgba(13,30,53,.8);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;}
+.stat-card .label{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.stat-card .value{font-size:2rem;font-weight:700;color:var(--gold-light);margin:.25rem 0;}
+.stat-card .change{font-size:.73rem;color:var(--success);}
+
+/* ===== TABELA ===== */
+.table-wrap{background:rgba(13,30,53,.8);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.table-header{padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.table-header h3{font-size:1rem;font-weight:600;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:.75rem 1.25rem;font-size:.73rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;}
+td{padding:.875rem 1.25rem;font-size:.875rem;border-bottom:1px solid rgba(201,168,76,.07);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(201,168,76,.04);}
+.badge{display:inline-block;padding:.25rem .75rem;border-radius:50px;font-size:.7rem;font-weight:600;letter-spacing:.04em;}
+.badge-ok{background:rgba(29,158,117,.15);color:#4ECDA0;border:1px solid rgba(29,158,117,.3);}
+.badge-pending{background:rgba(201,168,76,.12);color:var(--gold-light);border:1px solid rgba(201,168,76,.25);}
+.badge-off{background:rgba(226,75,74,.1);color:#F07070;border:1px solid rgba(226,75,74,.25);}
+.action-btns{display:flex;gap:.5rem;flex-wrap:wrap;}
+.btn-sm{padding:.35rem .8rem;border-radius:6px;font-size:.73rem;font-weight:600;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all .2s;}
+.btn-edit{background:rgba(201,168,76,.15);color:var(--gold-light);}
+.btn-edit:hover{background:rgba(201,168,76,.3);}
+.btn-del{background:rgba(226,75,74,.1);color:#F07070;}
+.btn-del:hover{background:rgba(226,75,74,.2);}
+.btn-approve{background:rgba(29,158,117,.1);color:#4ECDA0;}
+.btn-approve:hover{background:rgba(29,158,117,.2);}
+
+/* ===== MODAL ===== */
+.modal-bg{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  padding:2rem;opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.modal-box{background:var(--navy-card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;}
+.modal-box .mh{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-box .mh h3{font-size:1.1rem;font-weight:600;}
+.close-btn{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;}
+.close-btn:hover{color:var(--gold);}
+.modal-box .mb{padding:1.5rem;}
+.field{margin-bottom:1.2rem;}
+.field label{font-size:.78rem;color:var(--muted);display:block;margin-bottom:.4rem;font-weight:500;text-transform:uppercase;letter-spacing:.04em;}
+.field input,.field select,.field textarea{
+  width:100%;padding:.75rem 1rem;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--text);border-radius:10px;font-family:'Outfit',sans-serif;
+  font-size:.875rem;outline:none;transition:border-color .3s;resize:vertical;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);}
+.field select option{background:var(--navy-card);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.btn-primary{
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));
+  color:#0A0800;padding:.7rem 1.75rem;border-radius:50px;
+  font-weight:700;font-size:.875rem;border:none;cursor:pointer;
+  font-family:'Outfit',sans-serif;transition:all .3s;
+}
+.btn-primary:hover{box-shadow:0 4px 20px rgba(201,168,76,.4);transform:translateY(-1px);}
+.btn-secondary{
+  padding:.7rem 1.5rem;border-radius:50px;font-weight:600;
+  font-size:.875rem;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;
+  font-family:'Outfit',sans-serif;transition:all .3s;
+}
+.btn-secondary:hover{border-color:var(--gold);color:var(--text);}
+.btn-add{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold));
+  color:#0A0800;padding:.55rem 1.2rem;border-radius:50px;
+  font-weight:700;font-size:.8rem;border:none;cursor:pointer;
+  font-family:'Outfit',sans-serif;transition:all .3s;
+}
+.btn-add:hover{box-shadow:0 4px 16px rgba(201,168,76,.4);}
+
+/* ===== TOGGLE ===== */
+.toggle{display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;}
+.toggle input{display:none;}
+.toggle-track{width:40px;height:22px;background:rgba(255,255,255,.1);border-radius:50px;position:relative;transition:background .3s;border:1px solid var(--border);}
+.toggle input:checked+.toggle-track{background:var(--gold-dark);}
+.toggle-track::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .3s;}
+.toggle input:checked+.toggle-track::after{left:20px;}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:9999;
+  background:rgba(29,158,117,.93);color:#fff;
+  padding:1rem 1.5rem;border-radius:12px;font-size:.875rem;font-weight:500;
+  transform:translateY(80px);opacity:0;transition:all .4s;
+  border-left:4px solid #4ECDA0;max-width:320px;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.error{background:rgba(226,75,74,.93);border-left-color:#F07070;}
+
+/* ===== PROJETO CARD PREVIEW (admin) ===== */
+.proj-icon-preview{
+  width:56px;height:44px;background:linear-gradient(135deg,#0D1E35,#1A3A6E);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;border:1px solid var(--border);
+}
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--muted);}
+.empty-state .icon{font-size:3rem;margin-bottom:1rem;}
+
+/* ===== FORM CONFIGURAÇÕES ===== */
+.config-wrap{background:rgba(13,30,53,.8);border:1px solid var(--border);border-radius:14px;padding:2rem;}
+.config-wrap .section-title{font-size:.9rem;font-weight:600;color:var(--gold-light);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);}
+
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .field-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🔐</div>
+    <div class="login-title">Painel Admin</div>
+    <div class="login-sub">NY Design Web — Acesso restrito</div>
+    <div class="input-wrap">
+      <label>Usuário</label>
+      <input type="text" id="login-user" placeholder="admin" onkeydown="if(event.key==='Enter')tryLogin()">
+    </div>
+    <div class="input-wrap">
+      <label>Senha</label>
+      <input type="password" id="login-pass" placeholder="••••••••" id="pass-field" onkeydown="if(event.key==='Enter')tryLogin()">
+      <button class="show-pass" onclick="togglePass()" title="Mostrar/esconder">👁</button>
+    </div>
+    <button class="btn-login" onclick="tryLogin()">Entrar no Painel</button>
+    <div class="login-error" id="login-error">Usuário ou senha incorretos.</div>
+  </div>
+</div>
+
+<!-- ===== ADMIN LAYOUT ===== -->
+<div id="admin-layout" style="display:none;width:100%;min-height:100vh;">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">NY Design Web<span>Painel Administrativo</span></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Principal</div>
+      <div class="nav-item active" onclick="goPage('dashboard',this)"><span class="icon">📊</span> Dashboard</div>
+      <div class="nav-section">Conteúdo</div>
+      <div class="nav-item" onclick="goPage('projetos',this)"><span class="icon">🌐</span> Projetos</div>
+      <div class="nav-item" onclick="goPage('servicos',this)"><span class="icon">⚡</span> Serviços</div>
+      <div class="nav-item" onclick="goPage('depoimentos',this)"><span class="icon">💬</span> Depoimentos</div>
+      <div class="nav-section">Configurações</div>
+      <div class="nav-item" onclick="goPage('perfil',this)"><span class="icon">👤</span> Perfil & Links</div>
+      <div class="nav-item" onclick="goPage('pagamentos',this)"><span class="icon">💳</span> Pagamento</div>
+      <div class="nav-item" onclick="window.open('index.html','_blank')"><span class="icon">👁️</span> Ver Site</div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="logout()">🚪 Sair</button>
+    </div>
+  </aside>
+
+  <main class="main" style="display:flex;flex-direction:column;">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-actions" id="topbar-actions"></div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-row">
+        <div class="stat-card"><div class="label">Projetos</div><div class="value" id="stat-proj">0</div><div class="change">publicados</div></div>
+        <div class="stat-card"><div class="label">Serviços</div><div class="value" id="stat-serv">0</div><div class="change">ativos</div></div>
+        <div class="stat-card"><div class="label">Depoimentos</div><div class="value" id="stat-dep">0</div><div class="change" id="stat-dep-change">publicados</div></div>
+        <div class="stat-card"><div class="label">Pendentes</div><div class="value" id="stat-pend" style="color:#E8C97A;">0</div><div class="change" style="color:var(--gold-light);">aguardando aprovação</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Atividade Recente</h3></div>
+        <table><thead><tr><th>Ação</th><th>Item</th><th>Status</th></tr></thead>
+        <tbody id="activity-log">
+          <tr><td colspan="3" style="text-align:center;color:var(--muted);padding:2rem;">Nenhuma atividade ainda.</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- PROJETOS -->
+    <div class="page" id="page-projetos">
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Projetos do Portfólio</h3>
+          <button class="btn-add" onclick="openModal('projeto')">+ Novo Projeto</button>
+        </div>
+        <table>
+          <thead><tr><th>Preview</th><th>Nome</th><th>Categoria</th><th>URL</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="proj-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SERVIÇOS -->
+    <div class="page" id="page-servicos">
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>Serviços Oferecidos</h3>
+          <button class="btn-add" onclick="openModal('servico')">+ Novo Serviço</button>
+        </div>
+        <table>
+          <thead><tr><th>Ícone</th><th>Nome</th><th>Preço</th><th>Prazo</th><th>Ativo</th><th>Ações</th></tr></thead>
+          <tbody id="serv-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DEPOIMENTOS -->
+    <div class="page" id="page-depoimentos">
+      <div class="table-wrap">
+        <div class="table-header"><h3>Depoimentos de Clientes</h3></div>
+        <table>
+          <thead><tr><th>Cliente</th><th>Empresa</th><th>⭐</th><th>Depoimento</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="dep-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PERFIL -->
+    <div class="page" id="page-perfil">
+      <div class="config-wrap">
+        <div class="section-title">👤 Informações Pessoais</div>
+        <div class="field-row">
+          <div class="field"><label>Nome</label><input type="text" id="cfg-name" placeholder="N Design Web"></div>
+          <div class="field"><label>Profissão</label><input type="text" id="cfg-job" placeholder="Designer & Dev Web"></div>
+        </div>
+        <div class="field"><label>Bio / Sobre mim</label><textarea id="cfg-bio" rows="3" placeholder="Especializado em..."></textarea></div>
+        <div class="field-row">
+          <div class="field"><label>WhatsApp (só números)</label><input type="text" id="cfg-wa" placeholder="5582999999999"></div>
+          <div class="field"><label>E-mail</label><input type="text" id="cfg-email" placeholder="contato@ndesignweb.com"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>LinkedIn URL</label><input type="text" id="cfg-linkedin" placeholder="https://linkedin.com/in/..."></div>
+          <div class="field"><label>GitHub URL</label><input type="text" id="cfg-github" placeholder="https://github.com/..."></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Projetos entregues</label><input type="number" id="cfg-projcount" placeholder="50"></div>
+          <div class="field"><label>Clientes satisfeitos</label><input type="number" id="cfg-clientcount" placeholder="40"></div>
+          <div class="field"><label>Anos de experiência</label><input type="number" id="cfg-years" placeholder="5"></div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <button class="btn-primary" onclick="savePerfil()">Salvar Perfil</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGAMENTOS -->
+    <div class="page" id="page-pagamentos">
+      <div class="config-wrap">
+        <div class="section-title">💳 Formas de Pagamento</div>
+        <div class="field"><label>Chave PIX</label><input type="text" id="cfg-pix" placeholder="CPF, CNPJ, e-mail ou telefone"></div>
+        <div class="field"><label>Nome exibido no PIX</label><input type="text" id="cfg-pixname" placeholder="N Design Web"></div>
+        <div class="field"><label>Mensagem de pagamento</label><textarea id="cfg-pixmsg" rows="3" placeholder="Após confirmação..."></textarea></div>
+        <div style="margin-top:1.5rem;">
+          <button class="btn-primary" onclick="savePagamentos()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL PROJETO -->
+<div class="modal-bg" id="modal-projeto">
+  <div class="modal-box">
+    <div class="mh">
+      <h3 id="modal-proj-title">Novo Projeto</h3>
+      <button class="close-btn" onclick="closeAllModals()">✕</button>
+    </div>
+    <div class="mb">
+      <input type="hidden" id="proj-edit-id">
+      <div class="field-row">
+        <div class="field"><label>Nome do Projeto</label><input type="text" id="proj-name" placeholder="Ex: Bella Vista"></div>
+        <div class="field"><label>Categoria</label>
+          <select id="proj-cat">
+            <option>Restaurante</option><option>Advocacia</option><option>Saúde & Beleza</option>
+            <option>E-commerce</option><option>Fitness</option><option>Educação</option>
+            <option>Institucional</option><option>Moda</option><option>Tecnologia</option><option>Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>URL do Site</label><input type="text" id="proj-url" placeholder="https://seusite.com.br"></div>
+      <div class="field"><label>Descrição</label><textarea id="proj-desc" rows="3" placeholder="Descreva o projeto brevemente..."></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Emoji / Ícone do preview</label><input type="text" id="proj-icon" placeholder="🌐" maxlength="4"></div>
+        <div class="field"><label>Status</label>
+          <select id="proj-status"><option value="publicado">Publicado</option><option value="rascunho">Rascunho</option></select>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem;display:flex;justify-content:flex-end;gap:.75rem;">
+        <button class="btn-secondary" onclick="closeAllModals()">Cancelar</button>
+        <button class="btn-primary" onclick="saveProject()">Salvar Projeto</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SERVIÇO -->
+<div class="modal-bg" id="modal-servico">
+  <div class="modal-box">
+    <div class="mh">
+      <h3 id="modal-serv-title">Novo Serviço</h3>
+      <button class="close-btn" onclick="closeAllModals()">✕</button>
+    </div>
+    <div class="mb">
+      <input type="hidden" id="serv-edit-id">
+      <div class="field-row">
+        <div class="field"><label>Nome do Serviço</label><input type="text" id="serv-name" placeholder="Ex: Site Profissional"></div>
+        <div class="field"><label>Ícone (emoji)</label><input type="text" id="serv-icon" placeholder="🌐" maxlength="4"></div>
+      </div>
+      <div class="field"><label>Descrição</label><textarea id="serv-desc" rows="3" placeholder="Descreva o serviço..."></textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Preço</label><input type="text" id="serv-price" placeholder="A partir de R$ 800"></div>
+        <div class="field"><label>Prazo</label><input type="text" id="serv-prazo" placeholder="7–14 dias"></div>
+      </div>
+      <div style="margin-top:1.5rem;display:flex;justify-content:flex-end;gap:.75rem;">
+        <button class="btn-secondary" onclick="closeAllModals()">Cancelar</button>
+        <button class="btn-primary" onclick="saveService()">Salvar Serviço</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="modal-bg" id="modal-confirm">
+  <div class="modal-box" style="max-width:380px;">
+    <div class="mh"><h3>Confirmar exclusão</h3><button class="close-btn" onclick="closeAllModals()">✕</button></div>
+    <div class="mb">
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:1.5rem;">Tem certeza que deseja excluir este item? Esta ação não pode ser desfeita.</p>
+      <div style="display:flex;justify-content:flex-end;gap:.75rem;">
+        <button class="btn-secondary" onclick="closeAllModals()">Cancelar</button>
+        <button style="background:rgba(226,75,74,.9);color:#fff;padding:.65rem 1.5rem;border-radius:50px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:.875rem;" onclick="confirmDelete()">Excluir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// STORAGE
+// ============================================================
+const STORAGE_KEYS = {
+  projects: 'ny_projects',
+  services: 'ny_services',
+  reviews:  'ny_reviews',
+  settings: 'ny_settings',
+  activity: 'ny_activity',
+};
+
+function load(key) {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEYS[key])) || null; } catch { return null; }
+}
+function save(key, data) {
+  localStorage.setItem(STORAGE_KEYS[key], JSON.stringify(data));
+}
+
+// Defaults
+function getProjects() {
+  return load('projects') || [
+    {id:1, title:'Bella Vista', tag:'Restaurante', url:'https://example.com', desc:'Site completo com cardápio online para restaurante italiano.', icon:'🍽️', status:'publicado'},
+    {id:2, title:'Dr. Mendes', tag:'Advocacia', url:'https://example.com', desc:'Site institucional para escritório de advocacia.', icon:'⚖️', status:'publicado'},
+    {id:3, title:'Clínica Aurora', tag:'Saúde & Beleza', url:'https://example.com', desc:'Landing page para clínica de estética.', icon:'💆', status:'publicado'},
+    {id:4, title:'Atelier Chic', tag:'E-commerce', url:'https://example.com', desc:'Loja online com catálogo e pagamento integrado.', icon:'👗', status:'publicado'},
+    {id:5, title:'Prime Gym', tag:'Fitness', url:'https://example.com', desc:'Site para academia com planos e galeria.', icon:'💪', status:'publicado'},
+  ];
+}
+function getServices() {
+  return load('services') || [
+    {id:1, name:'Site Profissional', icon:'🌐', desc:'Sites modernos, rápidos e responsivos.', price:'A partir de R$ 800', prazo:'7–14 dias', active:true},
+    {id:2, name:'Logo & Identidade', icon:'🎨', desc:'Criação de logotipo com manual de marca.', price:'A partir de R$ 350', prazo:'3–5 dias', active:true},
+    {id:3, name:'Cartão de Visita', icon:'💳', desc:'Cartões digitais e impressos sofisticados.', price:'A partir de R$ 120', prazo:'1–2 dias', active:true},
+    {id:4, name:'Social Media', icon:'📱', desc:'Posts e artes para redes sociais.', price:'A partir de R$ 200', prazo:'Mensal', active:true},
+  ];
+}
+function getReviews() {
+  return load('reviews') || [
+    {id:1, client:'Ana Maria', company:'Clínica Aurora', stars:5, text:'O site superou todas as expectativas. Profissional, rápido e lindo!', status:'publicado'},
+    {id:2, client:'Ricardo Mendes', company:'Advocacia Mendes', stars:5, text:'Entrega rápida, comunicação excelente e resultado incrível.', status:'publicado'},
+    {id:3, client:'Carla Lima', company:'Atelier Chic', stars:5, text:'A logo ficou perfeita! Muito talento e atenção aos detalhes.', status:'pendente'},
+  ];
+}
+function getSettings() {
+  return load('settings') || {
+    name:'N Design Web', job:'Designer & Desenvolvedor Web', bio:'Especializado em criar experiências digitais premium.',
+    whatsapp:'5582999999999', email:'contato@ndesignweb.com',
+    linkedin:'https://linkedin.com', github:'https://github.com',
+    projcount:50, clientcount:40, years:5,
+    pix:'contato@ndesignweb.com', pixname:'N Design Web', pixmsg:'Após confirmação do pagamento, projeto iniciado em 24h.',
+  };
+}
+function getActivity() { return load('activity') || []; }
+function addActivity(acao, item) {
+  const log = getActivity();
+  log.unshift({acao, item, date: new Date().toLocaleDateString('pt-BR')});
+  if(log.length > 20) log.pop();
+  save('activity', log);
+}
+
+function nextId(arr) { return arr.length ? Math.max(...arr.map(x=>x.id||0))+1 : 1; }
+
+// ============================================================
+// LOGIN
+// ============================================================
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'ndesign2025';
+
+function tryLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  if(u === ADMIN_USER && p === ADMIN_PASS) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-layout').style.display = 'flex';
+    sessionStorage.setItem('ny_admin','1');
+    initAdmin();
+  } else {
+    const err = document.getElementById('login-error');
+    err.style.display = 'block';
+    err.textContent = 'Usuário ou senha incorretos.';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('ny_admin');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-layout').style.display = 'none';
+}
+
+function togglePass() {
+  const f = document.getElementById('login-pass');
+  f.type = f.type === 'password' ? 'text' : 'password';
+}
+
+if(sessionStorage.getItem('ny_admin') === '1') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-layout').style.display = 'flex';
+}
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+const PAGE_TITLES = {
+  dashboard:'Dashboard', projetos:'Projetos do Portfólio',
+  servicos:'Serviços Oferecidos', depoimentos:'Depoimentos de Clientes',
+  perfil:'Perfil & Links Sociais', pagamentos:'Formas de Pagamento',
+};
+
+function goPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('topbar-title').textContent = PAGE_TITLES[id] || id;
+  if(id==='projetos') renderProjTable();
+  if(id==='servicos') renderServTable();
+  if(id==='depoimentos') renderDepTable();
+  if(id==='perfil') loadPerfilForm();
+  if(id==='pagamentos') loadPagForm();
+  if(id==='dashboard') renderDashboard();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const projs = getProjects();
+  const servs = getServices();
+  const revs = getReviews();
+  document.getElementById('stat-proj').textContent = projs.filter(p=>p.status==='publicado').length;
+  document.getElementById('stat-serv').textContent = servs.filter(s=>s.active).length;
+  const pub = revs.filter(r=>r.status==='publicado').length;
+  const pend = revs.filter(r=>r.status==='pendente').length;
+  document.getElementById('stat-dep').textContent = pub;
+  document.getElementById('stat-pend').textContent = pend;
+  const log = getActivity();
+  const tbody = document.getElementById('activity-log');
+  if(log.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:2rem;">Nenhuma atividade ainda.</td></tr>';
+  } else {
+    tbody.innerHTML = log.slice(0,10).map(a => `
+      <tr><td>${a.acao}</td><td>${a.item}</td><td style="color:var(--muted);font-size:.8rem;">${a.date}</td></tr>
+    `).join('');
+  }
+}
+
+// ============================================================
+// PROJETOS CRUD
+// ============================================================
+function renderProjTable() {
+  const projs = getProjects();
+  const tbody = document.getElementById('proj-table-body');
+  if(projs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">🌐</div><p>Nenhum projeto ainda. Clique em "+ Novo Projeto".</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = projs.map(p => `
+    <tr>
+      <td><div class="proj-icon-preview">${p.icon||'🌐'}</div></td>
+      <td><strong>${p.title}</strong></td>
+      <td>${p.tag||'-'}</td>
+      <td><a href="${p.url}" target="_blank" style="color:var(--gold-light);font-size:.8rem;text-decoration:none;">${p.url ? shortenUrl(p.url) : '-'}</a></td>
+      <td><span class="badge ${p.status==='publicado'?'badge-ok':'badge-off'}">${p.status==='publicado'?'Publicado':'Rascunho'}</span></td>
+      <td class="action-btns">
+        <button class="btn-sm btn-edit" onclick="editProj(${p.id})">✏️ Editar</button>
+        <button class="btn-sm btn-del" onclick="delItem('projeto',${p.id})">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function shortenUrl(url) {
+  try { return new URL(url).hostname.replace('www.',''); } catch { return url.slice(0,30); }
+}
+
+function openModal(type) {
+  closeAllModals();
+  document.getElementById('modal-'+type).classList.add('open');
+}
+
+function editProj(id) {
+  const projs = getProjects();
+  const p = projs.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('modal-proj-title').textContent = 'Editar Projeto';
+  document.getElementById('proj-edit-id').value = id;
+  document.getElementById('proj-name').value = p.title||'';
+  document.getElementById('proj-cat').value = p.tag||'Outro';
+  document.getElementById('proj-url').value = p.url||'';
+  document.getElementById('proj-desc').value = p.desc||'';
+  document.getElementById('proj-icon').value = p.icon||'';
+  document.getElementById('proj-status').value = p.status||'publicado';
+  openModal('projeto');
+}
+
+function saveProject() {
+  const name = document.getElementById('proj-name').value.trim();
+  if(!name) { showToast('Preencha o nome do projeto!', true); return; }
+  const editId = parseInt(document.getElementById('proj-edit-id').value||'0');
+  const projs = getProjects();
+  const obj = {
+    id: editId || nextId(projs),
+    title: name,
+    tag: document.getElementById('proj-cat').value,
+    url: document.getElementById('proj-url').value.trim(),
+    desc: document.getElementById('proj-desc').value.trim(),
+    icon: document.getElementById('proj-icon').value.trim() || '🌐',
+    status: document.getElementById('proj-status').value,
+  };
+  if(editId) {
+    const idx = projs.findIndex(x=>x.id===editId);
+    if(idx>=0) projs[idx] = obj; else projs.push(obj);
+    addActivity('Projeto editado', name);
+  } else {
+    projs.push(obj);
+    addActivity('Projeto adicionado', name);
+  }
+  save('projects', projs);
+  closeAllModals();
+  renderProjTable();
+  renderDashboard();
+  showToast(editId ? 'Projeto atualizado!' : 'Projeto adicionado!');
+  // Clear
+  document.getElementById('proj-edit-id').value = '';
+  document.getElementById('modal-proj-title').textContent = 'Novo Projeto';
+}
+
+// ============================================================
+// SERVIÇOS CRUD
+// ============================================================
+function renderServTable() {
+  const servs = getServices();
+  const tbody = document.getElementById('serv-table-body');
+  if(servs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">⚡</div><p>Nenhum serviço ainda.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = servs.map(s => `
+    <tr>
+      <td style="font-size:1.5rem;">${s.icon||'⚡'}</td>
+      <td><strong>${s.name}</strong><br><span style="color:var(--muted);font-size:.78rem;">${(s.desc||'').slice(0,50)}...</span></td>
+      <td style="color:var(--gold-light);">${s.price||'-'}</td>
+      <td>${s.prazo||'-'}</td>
+      <td>
+        <label class="toggle">
+          <input type="checkbox" ${s.active?'checked':''} onchange="toggleServ(${s.id},this.checked)">
+          <span class="toggle-track"></span>
+        </label>
+      </td>
+      <td class="action-btns">
+        <button class="btn-sm btn-edit" onclick="editServ(${s.id})">✏️ Editar</button>
+        <button class="btn-sm btn-del" onclick="delItem('servico',${s.id})">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function editServ(id) {
+  const servs = getServices();
+  const s = servs.find(x=>x.id===id);
+  if(!s) return;
+  document.getElementById('modal-serv-title').textContent = 'Editar Serviço';
+  document.getElementById('serv-edit-id').value = id;
+  document.getElementById('serv-name').value = s.name||'';
+  document.getElementById('serv-icon').value = s.icon||'';
+  document.getElementById('serv-desc').value = s.desc||'';
+  document.getElementById('serv-price').value = s.price||'';
+  document.getElementById('serv-prazo').value = s.prazo||'';
+  openModal('servico');
+}
+
+function saveService() {
+  const name = document.getElementById('serv-name').value.trim();
+  if(!name) { showToast('Preencha o nome do serviço!', true); return; }
+  const editId = parseInt(document.getElementById('serv-edit-id').value||'0');
+  const servs = getServices();
+  const obj = {
+    id: editId || nextId(servs),
+    name,
+    icon: document.getElementById('serv-icon').value.trim() || '⚡',
+    desc: document.getElementById('serv-desc').value.trim(),
+    price: document.getElementById('serv-price').value.trim(),
+    prazo: document.getElementById('serv-prazo').value.trim(),
+    active: editId ? (servs.find(x=>x.id===editId)?.active ?? true) : true,
+  };
+  if(editId) {
+    const idx = servs.findIndex(x=>x.id===editId);
+    if(idx>=0) servs[idx] = obj; else servs.push(obj);
+    addActivity('Serviço editado', name);
+  } else {
+    servs.push(obj);
+    addActivity('Serviço adicionado', name);
+  }
+  save('services', servs);
+  closeAllModals();
+  renderServTable();
+  renderDashboard();
+  showToast(editId ? 'Serviço atualizado!' : 'Serviço adicionado!');
+  document.getElementById('serv-edit-id').value = '';
+  document.getElementById('modal-serv-title').textContent = 'Novo Serviço';
+}
+
+function toggleServ(id, val) {
+  const servs = getServices();
+  const s = servs.find(x=>x.id===id);
+  if(s) { s.active = val; save('services', servs); renderDashboard(); }
+}
+
+// ============================================================
+// DEPOIMENTOS
+// ============================================================
+function renderDepTable() {
+  const revs = getReviews();
+  const tbody = document.getElementById('dep-table-body');
+  if(revs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">💬</div><p>Nenhum depoimento ainda.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = revs.map(r => `
+    <tr>
+      <td><strong>${r.client}</strong></td>
+      <td>${r.company||'-'}</td>
+      <td>${'⭐'.repeat(r.stars||5)}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem;color:var(--muted);">${r.text}</td>
+      <td><span class="badge ${r.status==='publicado'?'badge-ok':'badge-pending'}">${r.status==='publicado'?'Publicado':'Pendente'}</span></td>
+      <td class="action-btns">
+        ${r.status==='pendente'?`<button class="btn-sm btn-approve" onclick="approveReview(${r.id})">✓ Aprovar</button>`:''}
+        <button class="btn-sm btn-del" onclick="delItem('depoimento',${r.id})">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function approveReview(id) {
+  const revs = getReviews();
+  const r = revs.find(x=>x.id===id);
+  if(r) {
+    r.status='publicado';
+    save('reviews', revs);
+    renderDepTable();
+    renderDashboard();
+    addActivity('Depoimento aprovado', r.client);
+    showToast('Depoimento aprovado e publicado!');
+  }
+}
+
+// ============================================================
+// DELETE
+// ============================================================
+let _deleteTarget = null;
+
+function delItem(type, id) {
+  _deleteTarget = {type, id};
+  openModal('confirm');
+}
+
+function confirmDelete() {
+  if(!_deleteTarget) { closeAllModals(); return; }
+  const {type, id} = _deleteTarget;
+  if(type==='projeto') {
+    const arr = getProjects().filter(x=>x.id!==id);
+    save('projects', arr);
+    renderProjTable();
+    addActivity('Projeto excluído', '#'+id);
+    showToast('Projeto excluído!');
+  } else if(type==='servico') {
+    const arr = getServices().filter(x=>x.id!==id);
+    save('services', arr);
+    renderServTable();
+    addActivity('Serviço excluído', '#'+id);
+    showToast('Serviço excluído!');
+  } else if(type==='depoimento') {
+    const arr = getReviews().filter(x=>x.id!==id);
+    save('reviews', arr);
+    renderDepTable();
+    addActivity('Depoimento excluído', '#'+id);
+    showToast('Depoimento excluído!');
+  }
+  renderDashboard();
+  _deleteTarget = null;
+  closeAllModals();
+}
+
+// ============================================================
+// PERFIL & PAGAMENTOS
+// ============================================================
+function loadPerfilForm() {
+  const s = getSettings();
+  document.getElementById('cfg-name').value = s.name||'';
+  document.getElementById('cfg-job').value = s.job||'';
+  document.getElementById('cfg-bio').value = s.bio||'';
+  document.getElementById('cfg-wa').value = s.whatsapp||'';
+  document.getElementById('cfg-email').value = s.email||'';
+  document.getElementById('cfg-linkedin').value = s.linkedin||'';
+  document.getElementById('cfg-github').value = s.github||'';
+  document.getElementById('cfg-projcount').value = s.projcount||'';
+  document.getElementById('cfg-clientcount').value = s.clientcount||'';
+  document.getElementById('cfg-years').value = s.years||'';
+}
+
+function savePerfil() {
+  const s = getSettings();
+  s.name = document.getElementById('cfg-name').value.trim();
+  s.job = document.getElementById('cfg-job').value.trim();
+  s.bio = document.getElementById('cfg-bio').value.trim();
+  s.whatsapp = document.getElementById('cfg-wa').value.trim();
+  s.email = document.getElementById('cfg-email').value.trim();
+  s.linkedin = document.getElementById('cfg-linkedin').value.trim();
+  s.github = document.getElementById('cfg-github').value.trim();
+  s.projcount = parseInt(document.getElementById('cfg-projcount').value)||0;
+  s.clientcount = parseInt(document.getElementById('cfg-clientcount').value)||0;
+  s.years = parseInt(document.getElementById('cfg-years').value)||0;
+  save('settings', s);
+  addActivity('Perfil atualizado', s.name);
+  showToast('Perfil salvo com sucesso!');
+}
+
+function loadPagForm() {
+  const s = getSettings();
+  document.getElementById('cfg-pix').value = s.pix||'';
+  document.getElementById('cfg-pixname').value = s.pixname||'';
+  document.getElementById('cfg-pixmsg').value = s.pixmsg||'';
+}
+
+function savePagamentos() {
+  const s = getSettings();
+  s.pix = document.getElementById('cfg-pix').value.trim();
+  s.pixname = document.getElementById('cfg-pixname').value.trim();
+  s.pixmsg = document.getElementById('cfg-pixmsg').value.trim();
+  save('settings', s);
+  addActivity('Pagamento atualizado', '');
+  showToast('Configurações salvas!');
+}
+
+// ============================================================
+// MODAIS
+// ============================================================
+function closeAllModals() {
+  document.querySelectorAll('.modal-bg').forEach(m => m.classList.remove('open'));
+}
+
+document.querySelectorAll('.modal-bg').forEach(bg => {
+  bg.addEventListener('click', e => { if(e.target === bg) closeAllModals(); });
+});
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeAllModals(); });
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = isError ? '✕ '+msg : '✓ '+msg;
+  t.className = 'toast'+(isError?' error':'');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function initAdmin() {
+  renderDashboard();
+}
+
+if(sessionStorage.getItem('ny_admin') === '1') {
+  initAdmin();
+}
+</script>
+</body>
+</html>
