@@ -399,7 +399,7 @@ tr:hover td{background:rgba(201,168,76,.04);}
         <div class="field"><label>Nome do Projeto</label><input type="text" id="proj-name" placeholder="Ex: Bella Vista"></div>
         <div class="field"><label>Categoria</label>
           <select id="proj-cat">
-            <option>Restaurante</option><option>Advocacia</option><option>Saúde & Beleza</option>
+            <option>Restaurante</option><option>Advocacia</option><option>Saúde</option><option>Beleza</option>
             <option>E-commerce</option><option>Fitness</option><option>Educação</option>
             <option>Institucional</option><option>Moda</option><option>Tecnologia</option><option>Outro</option>
           </select>
@@ -407,11 +407,25 @@ tr:hover td{background:rgba(201,168,76,.04);}
       </div>
       <div class="field"><label>URL do Site</label><input type="text" id="proj-url" placeholder="https://seusite.com.br"></div>
       <div class="field"><label>Descrição</label><textarea id="proj-desc" rows="3" placeholder="Descreva o projeto brevemente..."></textarea></div>
-      <div class="field-row">
-        <div class="field"><label>Emoji / Ícone do preview</label><input type="text" id="proj-icon" placeholder="🌐" maxlength="4"></div>
-        <div class="field"><label>Status</label>
-          <select id="proj-status"><option value="publicado">Publicado</option><option value="rascunho">Rascunho</option></select>
+      <div class="field">
+        <label>Imagem do Projeto</label>
+        <div class="upload-area" onclick="document.getElementById('proj-img-input').click()" style="cursor:pointer;">
+          <div id="proj-img-preview" style="display:none;margin-bottom:.75rem;">
+            <img id="proj-img-thumb" src="" style="max-height:140px;border-radius:10px;max-width:100%;object-fit:cover;">
+            <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem;">Clique para trocar</p>
+          </div>
+          <div id="proj-upload-hint">
+            <div style="font-size:2rem;">🖼️</div>
+            <p>Clique para escolher uma imagem</p>
+            <p style="font-size:.75rem;margin-top:.25rem;">JPG, PNG, WebP — recomendado 600×400px</p>
+          </div>
+          <input type="file" id="proj-img-input" accept="image/*" style="display:none" onchange="handleProjImg(this)">
         </div>
+        <input type="hidden" id="proj-icon">
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="proj-status"><option value="publicado">Publicado</option><option value="rascunho">Rascunho</option></select>
       </div>
       <div style="margin-top:1.5rem;display:flex;justify-content:flex-end;gap:.75rem;">
         <button class="btn-secondary" onclick="closeAllModals()">Cancelar</button>
@@ -430,9 +444,22 @@ tr:hover td{background:rgba(201,168,76,.04);}
     </div>
     <div class="mb">
       <input type="hidden" id="serv-edit-id">
-      <div class="field-row">
-        <div class="field"><label>Nome do Serviço</label><input type="text" id="serv-name" placeholder="Ex: Site Profissional"></div>
-        <div class="field"><label>Ícone (emoji)</label><input type="text" id="serv-icon" placeholder="🌐" maxlength="4"></div>
+      <div class="field"><label>Nome do Serviço</label><input type="text" id="serv-name" placeholder="Ex: Site Profissional"></div>
+      <div class="field">
+        <label>Imagem do Serviço</label>
+        <div class="upload-area" onclick="document.getElementById('serv-img-input').click()" style="cursor:pointer;">
+          <div id="serv-img-preview" style="display:none;margin-bottom:.75rem;">
+            <img id="serv-img-thumb" src="" style="max-height:120px;border-radius:10px;max-width:100%;object-fit:cover;">
+            <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem;">Clique para trocar</p>
+          </div>
+          <div id="serv-upload-hint">
+            <div style="font-size:2rem;">🖼️</div>
+            <p>Clique para escolher uma imagem</p>
+            <p style="font-size:.75rem;margin-top:.25rem;">JPG, PNG, WebP — recomendado 400×300px</p>
+          </div>
+          <input type="file" id="serv-img-input" accept="image/*" style="display:none" onchange="handleServImg(this)">
+        </div>
+        <input type="hidden" id="serv-icon">
       </div>
       <div class="field"><label>Descrição</label><textarea id="serv-desc" rows="3" placeholder="Descreva o serviço..."></textarea></div>
       <div class="field-row">
