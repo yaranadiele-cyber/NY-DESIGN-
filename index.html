@@ -726,14 +726,15 @@ footer{
 <section id="sobre" class="py">
   <div class="container">
     <div class="about-grid">
-      <div class="about-img-wrap">
-        <span style="position:relative;z-index:1;">👨‍💻</span>
+      <div class="about-img-wrap" id="about-img-wrap">
+        <img id="about-photo" src="" style="display:none;width:100%;height:100%;object-fit:cover;position:relative;z-index:1;">
+        <span id="about-emoji" style="position:relative;z-index:1;">👨‍💻</span>
       </div>
       <div>
         <div class="about-tag">✦ Quem sou eu</div>
-        <h2 class="about-title">Design com <span class="gold-text">propósito</span>, código com precisão</h2>
-        <p class="about-text">Sou desenvolvedor e designer especializado em criar experiências digitais que combinam estética premium com funcionalidade real. Cada projeto é tratado com atenção máxima ao detalhe.</p>
-        <p class="about-text">Trabalho com tecnologias modernas como Next.js, React, Supabase e ferramentas de design como Figma para entregar resultados que superam expectativas.</p>
+        <h2 class="about-title" id="about-title">Design com <span class="gold-text">propósito</span>, código com precisão</h2>
+        <p class="about-text" id="about-bio1">Sou desenvolvedor e designer especializado em criar experiências digitais que combinam estética premium com funcionalidade real. Cada projeto é tratado com atenção máxima ao detalhe.</p>
+        <p class="about-text" id="about-bio2">Trabalho com tecnologias modernas como Next.js, React, Supabase e ferramentas de design como Figma para entregar resultados que superam expectativas.</p>
         <div class="about-links">
           <a href="https://linkedin.com" target="_blank" class="social-link">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -974,13 +975,13 @@ class Particle {
     this.y = init ? Math.random() * canvas.height : (Math.random() > .5 ? -10 : canvas.height + 10);
     this.baseSize = this.type === 'large' ? Math.random() * 3 + 2.5 : Math.random() * 1.8 + .8;
     this.size = this.baseSize;
-    const speed = this.type === 'large' ? .25 : .5;
+    const speed = this.type === 'large' ? .8 : 1.6;
     this.speedX = (Math.random() - .5) * speed;
     this.speedY = (Math.random() - .5) * speed;
     this.opacity = this.type === 'large' ? Math.random() * .5 + .4 : Math.random() * .7 + .25;
     this.baseOpacity = this.opacity;
     this.pulse = Math.random() * Math.PI * 2;
-    this.pulseSpeed = Math.random() * .03 + .01;
+    this.pulseSpeed = Math.random() * .08 + .04;
     // Glow
     this.glowSize = this.baseSize * (this.type === 'large' ? 6 : 3.5);
   }
@@ -1044,11 +1045,11 @@ class ShootingStar {
     this.x = Math.random() * canvas.width * .7;
     this.y = Math.random() * canvas.height * .3;
     this.len = Math.random() * 180 + 80;
-    this.speed = Math.random() * 8 + 5;
+    this.speed = Math.random() * 16 + 10;
     this.angle = Math.PI / 4 + (Math.random() - .5) * .3;
     this.opacity = 0;
     this.life = 0;
-    this.maxLife = Math.random() * 60 + 40;
+    this.maxLife = Math.random() * 45 + 30;
     this.width = Math.random() * 1.5 + .5;
   }
   update() {
@@ -1210,6 +1211,21 @@ async function initCounters() {
   if(footerWa) footerWa.href = `https://wa.me/${waNum}`;
   const pixEl = document.getElementById('pix-key-display');
   if(pixEl) pixEl.textContent = s.pix_key||'contato@ndesignweb.com';
+
+  // Seção Sobre
+  const photo = s.photo_url||'';
+  if(photo) {
+    const img = document.getElementById('about-photo');
+    const emoji = document.getElementById('about-emoji');
+    if(img) { img.src = photo; img.style.display = 'block'; }
+    if(emoji) emoji.style.display = 'none';
+  }
+  const aboutTitle = document.getElementById('about-title');
+  if(aboutTitle && s.about_title) aboutTitle.innerHTML = s.about_title;
+  const bio1 = document.getElementById('about-bio1');
+  if(bio1 && s.bio) bio1.textContent = s.bio;
+  const bio2 = document.getElementById('about-bio2');
+  if(bio2) bio2.textContent = s.bio2||'';
 }
 
 // ===================== SERVIÇOS =====================

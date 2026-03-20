@@ -325,11 +325,33 @@ tr:hover td{background:rgba(201,168,76,.04);}
     <div class="page" id="page-perfil">
       <div class="config-wrap">
         <div class="section-title">👤 Informações Pessoais</div>
+
+        <!-- FOTO DE PERFIL -->
+        <div class="field">
+          <label>Sua Foto (seção "Sobre")</label>
+          <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+            <div id="photo-preview-wrap" style="width:100px;height:100px;border-radius:50%;overflow:hidden;border:2px solid var(--border);background:linear-gradient(135deg,#0D1E35,#1A3A6E);display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;">
+              <img id="photo-preview-img" src="" style="display:none;width:100%;height:100%;object-fit:cover;">
+              <span id="photo-preview-emoji">👨‍💻</span>
+            </div>
+            <div>
+              <div class="upload-area" style="padding:1rem 1.5rem;" onclick="document.getElementById('photo-input').click()">
+                <p>Clique para escolher sua foto</p>
+                <p style="font-size:.75rem;margin-top:.25rem;">JPG, PNG — recomendado 400×400px</p>
+                <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+              </div>
+              <input type="hidden" id="cfg-photo">
+            </div>
+          </div>
+        </div>
+
         <div class="field-row">
           <div class="field"><label>Nome</label><input type="text" id="cfg-name" placeholder="N Design Web"></div>
           <div class="field"><label>Profissão</label><input type="text" id="cfg-job" placeholder="Designer & Dev Web"></div>
         </div>
-        <div class="field"><label>Bio / Sobre mim</label><textarea id="cfg-bio" rows="3" placeholder="Especializado em..."></textarea></div>
+        <div class="field"><label>Bio / Sobre mim (parágrafo 1)</label><textarea id="cfg-bio" rows="3" placeholder="Especializado em..."></textarea></div>
+        <div class="field"><label>Bio (parágrafo 2 — opcional)</label><textarea id="cfg-bio2" rows="3" placeholder="Trabalho com tecnologias..."></textarea></div>
+        <div class="field"><label>Título da seção Sobre</label><input type="text" id="cfg-about-title" placeholder="Design com propósito, código com precisão"></div>
         <div class="field-row">
           <div class="field"><label>WhatsApp (só números)</label><input type="text" id="cfg-wa" placeholder="5582999999999"></div>
           <div class="field"><label>E-mail</label><input type="text" id="cfg-email" placeholder="contato@ndesignweb.com"></div>
@@ -576,6 +598,9 @@ async function getSettings() {
       name: s.name||'N Design Web',
       job: s.job||'Designer & Desenvolvedor Web',
       bio: s.bio||'',
+      bio2: s.bio2||'',
+      about_title: s.about_title||'',
+      photo_url: s.photo_url||'',
       whatsapp: s.whatsapp||'5582999999999',
       email: s.email||'contato@ndesignweb.com',
       linkedin: s.linkedin||'https://linkedin.com',
@@ -913,6 +938,8 @@ async function loadPerfilForm() {
   document.getElementById('cfg-name').value = s.name||'';
   document.getElementById('cfg-job').value = s.job||'';
   document.getElementById('cfg-bio').value = s.bio||'';
+  document.getElementById('cfg-bio2').value = s.bio2||'';
+  document.getElementById('cfg-about-title').value = s.about_title||'';
   document.getElementById('cfg-wa').value = s.whatsapp||'';
   document.getElementById('cfg-email').value = s.email||'';
   document.getElementById('cfg-linkedin').value = s.linkedin||'';
@@ -920,6 +947,14 @@ async function loadPerfilForm() {
   document.getElementById('cfg-projcount').value = s.projcount||'';
   document.getElementById('cfg-clientcount').value = s.clientcount||'';
   document.getElementById('cfg-years').value = s.years||'';
+  // Foto
+  const photo = s.photo_url||'';
+  document.getElementById('cfg-photo').value = photo;
+  if(photo) {
+    document.getElementById('photo-preview-img').src = photo;
+    document.getElementById('photo-preview-img').style.display = 'block';
+    document.getElementById('photo-preview-emoji').style.display = 'none';
+  }
 }
 
 async function savePerfil() {
@@ -927,6 +962,8 @@ async function savePerfil() {
     name: document.getElementById('cfg-name').value.trim(),
     job: document.getElementById('cfg-job').value.trim(),
     bio: document.getElementById('cfg-bio').value.trim(),
+    bio2: document.getElementById('cfg-bio2').value.trim(),
+    about_title: document.getElementById('cfg-about-title').value.trim(),
     whatsapp: document.getElementById('cfg-wa').value.trim(),
     email: document.getElementById('cfg-email').value.trim(),
     linkedin: document.getElementById('cfg-linkedin').value.trim(),
@@ -934,6 +971,7 @@ async function savePerfil() {
     projects_count: document.getElementById('cfg-projcount').value,
     clients_count: document.getElementById('cfg-clientcount').value,
     years_count: document.getElementById('cfg-years').value,
+    photo_url: document.getElementById('cfg-photo').value,
   };
   try {
     showToast('Salvando...');
@@ -968,6 +1006,19 @@ async function savePagamentos() {
 // ============================================================
 // IMAGE UPLOAD HANDLERS
 // ============================================================
+function handlePhotoUpload(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const b64 = e.target.result;
+    document.getElementById('cfg-photo').value = b64;
+    document.getElementById('photo-preview-img').src = b64;
+    document.getElementById('photo-preview-img').style.display = 'block';
+    document.getElementById('photo-preview-emoji').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
 function handleProjImg(input) {
   const file = input.files[0]; if(!file) return;
   const reader = new FileReader();
