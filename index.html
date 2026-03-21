@@ -178,65 +178,77 @@ section{position:relative;z-index:1;}
 /* SERVIÇOS */
 .services-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,280px));
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
   gap:1.75rem;
-  justify-content:center;
+  max-width:1100px;
+  margin:0 auto;
 }
 .service-card{
   padding:0;
-  text-align:center;
+  text-align:left;
   overflow:hidden;
   display:flex;
   flex-direction:column;
+  border-radius:20px;
 }
-.service-img{
+.service-img-wrap{
   width:100%;
-  aspect-ratio:4/3;
+  aspect-ratio:16/9;
   overflow:hidden;
   position:relative;
-  background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(10,22,40,.9));
+  background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(5,10,26,.95));
   flex-shrink:0;
 }
-.service-img img{
+.service-img-wrap img{
   width:100%;height:100%;
   object-fit:contain;
-  padding:1rem;
+  padding:.75rem;
   transition:transform .5s ease;
 }
-.service-img .service-emoji{
-  font-size:3rem;
+.service-img-wrap .service-emoji-fallback{
+  font-size:3.5rem;
   display:flex;align-items:center;justify-content:center;
   width:100%;height:100%;
 }
-.service-card:hover .service-img img{
-  transform:scale(1.04);
+.service-card:hover .service-img-wrap img{
+  transform:scale(1.05);
 }
-.service-img::after{
-  content:'';
-  position:absolute;bottom:0;left:0;right:0;height:40%;
-  background:linear-gradient(to top,rgba(5,10,26,.7),transparent);
+.service-img-wrap::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:50%;
+  background:linear-gradient(to top,rgba(5,10,26,.85),transparent);
   pointer-events:none;
 }
-.service-body{
-  padding:1.5rem 1.5rem 2rem;
+.service-card-body{
+  padding:1.5rem 1.75rem 2rem;
   flex:1;display:flex;flex-direction:column;
+  gap:.5rem;
+}
+.service-tag-line{
+  font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gold);font-weight:600;
 }
 .service-name{
   font-family:'Cormorant Garamond',serif;
-  font-size:1.3rem;font-weight:700;color:var(--text);
-  margin-bottom:.5rem;
+  font-size:1.35rem;font-weight:700;color:var(--text);
+  line-height:1.2;
 }
 .service-desc{
-  font-size:.82rem;color:var(--text-muted);line-height:1.7;
-  margin-bottom:1.25rem;font-weight:300;flex:1;
+  font-size:.83rem;color:var(--text-muted);line-height:1.7;
+  font-weight:300;flex:1;margin:.25rem 0 .75rem;
 }
 .service-price{
   font-size:1.5rem;font-weight:700;
   color:var(--gold-light);font-family:'Cormorant Garamond',serif;
-  display:block;margin-bottom:.2rem;
+  display:block;
 }
 .service-price-note{
-  font-size:.72rem;color:var(--text-muted);letter-spacing:.04em;display:block;margin-bottom:1.25rem;
+  font-size:.72rem;color:var(--text-muted);letter-spacing:.04em;
+  display:block;margin-bottom:1rem;
+}
+.service-divider{
+  width:40px;height:1px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+  margin:.25rem 0 .75rem;
 }
 
 /* PROJETOS CARROSSEL COVERFLOW 3D */
@@ -651,6 +663,62 @@ footer{
     </div>
     <div class="services-grid" id="services-grid">
       <!-- Renderizado dinamicamente via Supabase -->
+      <div class="glass service-card">
+        <div class="service-img-wrap">
+          <div class="service-emoji-fallback">🌐</div>
+        </div>
+        <div class="service-card-body">
+          <span class="service-tag-line">✦ Serviço</span>
+          <div class="service-name">Site Profissional</div>
+          <div class="service-divider"></div>
+          <div class="service-desc">Sites modernos, rápidos e responsivos que impressionam seus clientes e geram resultados reais.</div>
+          <span class="service-price">A partir de R$ 800</span>
+          <span class="service-price-note">⏱ prazo médio: 7–14 dias</span>
+          <a href="https://wa.me/5582999999999?text=Olá!%20Vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20o%20serviço%3A%20Site%20Profissional" target="_blank" class="btn-gold" style="font-size:.8rem;padding:.65rem 1.4rem;text-align:center;">Solicitar via WhatsApp</a>
+        </div>
+      </div>
+      <div class="glass service-card">
+        <div class="service-img-wrap">
+          <div class="service-emoji-fallback">🎨</div>
+        </div>
+        <div class="service-card-body">
+          <span class="service-tag-line">✦ Serviço</span>
+          <div class="service-name">Logo & Identidade</div>
+          <div class="service-divider"></div>
+          <div class="service-desc">Criação de logotipo profissional com manual de marca completo, paleta e tipografia.</div>
+          <span class="service-price">A partir de R$ 350</span>
+          <span class="service-price-note">⏱ prazo médio: 3–5 dias</span>
+          <a href="https://wa.me/5582999999999?text=Olá!%20Vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20o%20serviço%3A%20Logo%20%26%20Identidade" target="_blank" class="btn-gold" style="font-size:.8rem;padding:.65rem 1.4rem;text-align:center;">Solicitar via WhatsApp</a>
+        </div>
+      </div>
+      <div class="glass service-card">
+        <div class="service-img-wrap">
+          <div class="service-emoji-fallback">💳</div>
+        </div>
+        <div class="service-card-body">
+          <span class="service-tag-line">✦ Serviço</span>
+          <div class="service-name">Cartão de Visita</div>
+          <div class="service-divider"></div>
+          <div class="service-desc">Cartões digitais e impressos com design sofisticado que deixam uma impressão memorável.</div>
+          <span class="service-price">A partir de R$ 120</span>
+          <span class="service-price-note">⏱ prazo médio: 1–2 dias</span>
+          <a href="https://wa.me/5582999999999?text=Olá!%20Vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20o%20serviço%3A%20Cartão%20de%20Visita" target="_blank" class="btn-gold" style="font-size:.8rem;padding:.65rem 1.4rem;text-align:center;">Solicitar via WhatsApp</a>
+        </div>
+      </div>
+      <div class="glass service-card">
+        <div class="service-img-wrap">
+          <div class="service-emoji-fallback">📱</div>
+        </div>
+        <div class="service-card-body">
+          <span class="service-tag-line">✦ Serviço</span>
+          <div class="service-name">Social Media</div>
+          <div class="service-divider"></div>
+          <div class="service-desc">Posts e artes para Instagram, Facebook e outras redes com identidade visual consistente.</div>
+          <span class="service-price">A partir de R$ 200</span>
+          <span class="service-price-note">⏱ pacote mensal disponível</span>
+          <a href="https://wa.me/5582999999999?text=Olá!%20Vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20o%20serviço%3A%20Social%20Media" target="_blank" class="btn-gold" style="font-size:.8rem;padding:.65rem 1.4rem;text-align:center;">Solicitar via WhatsApp</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -665,7 +733,51 @@ footer{
     </div>
     <div class="carousel-wrapper">
       <div class="carousel-stage" id="carousel-stage">
-        <!-- Renderizado dinamicamente via Supabase -->
+        <div class="glass project-card" data-idx="0">
+          <div class="project-preview"><div class="project-preview-placeholder">🍽️</div></div>
+          <div class="project-info">
+            <div class="project-tag">Restaurante</div>
+            <div class="project-title">Bella Vista</div>
+            <div class="project-desc">Site completo com cardápio online, galeria e reservas para restaurante italiano.</div>
+            <span class="project-link">Ver site →</span>
+          </div>
+        </div>
+        <div class="glass project-card" data-idx="1">
+          <div class="project-preview"><div class="project-preview-placeholder">⚖️</div></div>
+          <div class="project-info">
+            <div class="project-tag">Advocacia</div>
+            <div class="project-title">Dr. Mendes</div>
+            <div class="project-desc">Site institucional elegante para escritório de advocacia com captação de leads.</div>
+            <span class="project-link">Ver site →</span>
+          </div>
+        </div>
+        <div class="glass project-card" data-idx="2">
+          <div class="project-preview"><div class="project-preview-placeholder">💆</div></div>
+          <div class="project-info">
+            <div class="project-tag">Saúde & Beleza</div>
+            <div class="project-title">Clínica Aurora</div>
+            <div class="project-desc">Landing page sofisticada para clínica de estética com agendamento integrado.</div>
+            <span class="project-link">Ver site →</span>
+          </div>
+        </div>
+        <div class="glass project-card" data-idx="3">
+          <div class="project-preview"><div class="project-preview-placeholder">👗</div></div>
+          <div class="project-info">
+            <div class="project-tag">E-commerce</div>
+            <div class="project-title">Atelier Chic</div>
+            <div class="project-desc">Loja online completa com catálogo, carrinho e pagamento integrado.</div>
+            <span class="project-link">Ver site →</span>
+          </div>
+        </div>
+        <div class="glass project-card" data-idx="4">
+          <div class="project-preview"><div class="project-preview-placeholder">💪</div></div>
+          <div class="project-info">
+            <div class="project-tag">Fitness</div>
+            <div class="project-title">Prime Gym</div>
+            <div class="project-desc">Site moderno para academia com planos, galeria e botão de matrícula.</div>
+            <span class="project-link">Ver site →</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="carousel-controls">
@@ -713,7 +825,45 @@ footer{
       <h2 class="section-title">O que dizem sobre <span class="gold-text">o trabalho</span></h2>
     </div>
     <div class="reviews-grid" id="reviews-grid">
-      <!-- Renderizado dinamicamente via Supabase -->
+      <div class="glass review-card">
+        <div class="review-stars">
+          <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+        </div>
+        <p class="review-text">"O site que foi criado para minha clínica superou todas as expectativas. Profissional, rápido e lindo. Meus clientes adoraram!"</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">AM</div>
+          <div>
+            <div class="reviewer-name">Ana Maria</div>
+            <div class="reviewer-role">Clínica Estética Aurora</div>
+          </div>
+        </div>
+      </div>
+      <div class="glass review-card">
+        <div class="review-stars">
+          <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+        </div>
+        <p class="review-text">"Entrega rápida, comunicação excelente e resultado incrível. Meu escritório ganhou muito mais credibilidade com o novo site."</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">RM</div>
+          <div>
+            <div class="reviewer-name">Ricardo Mendes</div>
+            <div class="reviewer-role">Advocacia Mendes</div>
+          </div>
+        </div>
+      </div>
+      <div class="glass review-card">
+        <div class="review-stars">
+          <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+        </div>
+        <p class="review-text">"A logo ficou perfeita! Transmite exatamente o que queria para minha marca. Muito talento e atenção aos detalhes."</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">CL</div>
+          <div>
+            <div class="reviewer-name">Carla Lima</div>
+            <div class="reviewer-role">Atelier Chic</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- FORM NOVO DEPOIMENTO -->
@@ -780,7 +930,7 @@ footer{
           <div class="pix-badge" style="border-color:rgba(201,168,76,.3);color:var(--gold-light);" id="badge-transferencia">🏦 Transferência</div>
         </div>
         <p style="font-size:.8rem;color:var(--text-muted);margin-top:1rem;">
-          Chave PIX: <strong style="color:var(--gold-light);" id="pix-key-display"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b2d1dddcc6d3c6ddf2dcd6d7c1dbd5dcc5d7d09cd1dddf">[email&#160;protected]</a></strong>
+          Chave PIX: <strong style="color:var(--gold-light);" id="pix-key-display"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89eae6e7fde8fde6c9e7edecfae0eee7feeceba7eae6e4">[email&#160;protected]</a></strong>
         </p>
         <p style="font-size:.8rem;color:var(--text-muted);margin-top:.5rem;" id="pix-msg-display"></p>
       </div>
@@ -1158,23 +1308,36 @@ async function initCounters() {
 async function buildServices() {
   const grid = document.getElementById('services-grid');
   if(!grid) return;
+  const rows = await sbGet('settings','');
+  const cfg = {};
+  rows.forEach(r => { cfg[r.key]=r.value; });
+  const waNum = (cfg.whatsapp||'5582999999999').replace(/\D/g,'');
+
   const data = await sbGet('services','?active=eq.true&order=order_num.asc');
   if(data.length === 0) { grid.innerHTML = ''; return; }
-  grid.innerHTML = data.map(s => `
+  grid.innerHTML = data.map(s => {
+    const waMsg = encodeURIComponent(`Olá! Vim pelo site e gostaria de solicitar o serviço: ${s.name}`);
+    const waUrl = `https://wa.me/${waNum}?text=${waMsg}`;
+    return `
     <div class="glass service-card">
-      <div class="service-img">
+      <div class="service-img-wrap">
         ${s.image_url
           ? `<img src="${s.image_url}" alt="${s.name}">`
-          : `<div class="service-emoji">⚡</div>`}
+          : `<div class="service-emoji-fallback">⚡</div>`}
       </div>
-      <div class="service-body">
+      <div class="service-card-body">
+        <span class="service-tag-line">✦ Serviço</span>
         <div class="service-name">${s.name}</div>
+        <div class="service-divider"></div>
         <div class="service-desc">${s.description||''}</div>
         <span class="service-price">${s.price||''}</span>
-        <span class="service-price-note">prazo médio: ${s.prazo||''}</span>
-        <a href="#agendamento" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;margin-top:auto;">Solicitar</a>
+        <span class="service-price-note">⏱ prazo médio: ${s.prazo||''}</span>
+        <a href="${waUrl}" target="_blank" class="btn-gold" style="font-size:.8rem;padding:.65rem 1.4rem;text-align:center;">
+          Solicitar via WhatsApp
+        </a>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ===================== DEPOIMENTOS =====================
