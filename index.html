@@ -652,7 +652,7 @@ footer{
         <span class="service-price">A partir de R$ 800</span>
         <span class="service-price-note">prazo médio: 7–14 dias</span>
         <br><br>
-        <a href="#agendamento" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
+        <a href="#" data-service="Site Profissional" class="btn-gold wa-solicitar" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
       </div>
       <div class="glass service-card">
         <div class="service-icon">🎨</div>
@@ -661,7 +661,7 @@ footer{
         <span class="service-price">A partir de R$ 350</span>
         <span class="service-price-note">prazo médio: 3–5 dias</span>
         <br><br>
-        <a href="#agendamento" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
+        <a href="#" data-service="Logo e Identidade Visual" class="btn-gold wa-solicitar" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
       </div>
       <div class="glass service-card">
         <div class="service-icon">💳</div>
@@ -670,7 +670,7 @@ footer{
         <span class="service-price">A partir de R$ 120</span>
         <span class="service-price-note">prazo médio: 1–2 dias</span>
         <br><br>
-        <a href="#agendamento" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
+        <a href="#" data-service="Cartão de Visita" class="btn-gold wa-solicitar" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
       </div>
       <div class="glass service-card">
         <div class="service-icon">📱</div>
@@ -679,7 +679,7 @@ footer{
         <span class="service-price">A partir de R$ 200</span>
         <span class="service-price-note">pacote mensal disponível</span>
         <br><br>
-        <a href="#agendamento" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
+        <a href="#" data-service="Social Media" class="btn-gold wa-solicitar" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
       </div>
     </div>
   </div>
@@ -938,7 +938,7 @@ footer{
       <div style="display:flex;gap:1.5rem;">
         <a href="https://linkedin.com" target="_blank" style="color:var(--text-muted);text-decoration:none;font-size:.8rem;transition:color .3s;" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color='var(--text-muted)'">LinkedIn</a>
         <a href="https://github.com" target="_blank" style="color:var(--text-muted);text-decoration:none;font-size:.8rem;transition:color .3s;" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color='var(--text-muted)'">GitHub</a>
-        <a href="https://wa.me/5582999999999" target="_blank" style="color:var(--text-muted);text-decoration:none;font-size:.8rem;transition:color .3s;" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color='var(--text-muted)'">WhatsApp</a>
+        <a href="https://wa.me/5582999999999" id="footer-wa-link" target="_blank" style="color:var(--text-muted);text-decoration:none;font-size:.8rem;transition:color .3s;" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color='var(--text-muted)'">WhatsApp</a>
       </div>
     </div>
   </div>
@@ -1258,7 +1258,7 @@ function applySettings(rows) {
   const clientCount = parseInt(s.clients_count||40);
   const yearsCount = parseInt(s.years_count||5);
   const waNum = (s.whatsapp||'5582999999999').replace(/\D/g,'');
-  _waNumCache = waNum; // atualiza número para buildServices
+  _waNumCache = waNum; // atualiza número para buildServices dinâmico
 
   // Counters
   const observer = new IntersectionObserver((entries) => {
@@ -1274,15 +1274,30 @@ function applySettings(rows) {
   const heroStats = document.querySelector('.hero-stats');
   if(heroStats) observer.observe(heroStats);
 
-  // WhatsApp
+  // Botão WhatsApp principal (seção agendamento)
   const waUrl = `https://wa.me/${waNum}?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento.`;
   const waBtn = document.getElementById('whatsapp-btn');
   if(waBtn) {
     waBtn.href = waUrl;
     waBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Chamar no WhatsApp`;
   }
+
+  // Footer WhatsApp
   const footerWa = document.getElementById('footer-wa-link');
   if(footerWa) footerWa.href = `https://wa.me/${waNum}`;
+
+  // ✅ Botões Solicitar dos cards estáticos de serviço
+  document.querySelectorAll('.wa-solicitar').forEach(btn => {
+    const service = btn.getAttribute('data-service') || '';
+    const msg = encodeURIComponent(`Olá! Vim pelo site e quero solicitar: ${service}`);
+    btn.href = `https://wa.me/${waNum}?text=${msg}`;
+    btn.target = '_blank';
+  });
+
+  // ✅ Re-renderiza serviços dinâmicos com número atualizado
+  buildServices();
+
+  // PIX
   const pixEl = document.getElementById('pix-key-display');
   if(pixEl) pixEl.textContent = s.pix_key||'contato@ndesignweb.com';
 
@@ -1309,9 +1324,10 @@ function applySettings(rows) {
     if(img) { img.src = photo; img.style.display = 'block'; }
     if(emoji) emoji.style.display = 'none';
   }
-  if(s.about_title) document.getElementById('about-title').innerHTML = s.about_title;
-  if(s.bio) document.getElementById('about-bio1').textContent = s.bio;
-  if(document.getElementById('about-bio2')) document.getElementById('about-bio2').textContent = s.bio2||'';
+  if(s.about_title) { const el=document.getElementById('about-title'); if(el) el.innerHTML = s.about_title; }
+  if(s.bio) { const el=document.getElementById('about-bio1'); if(el) el.textContent = s.bio; }
+  const bio2el = document.getElementById('about-bio2');
+  if(bio2el) bio2el.textContent = s.bio2||'';
 }
 
 async function initCounters() {
@@ -1538,8 +1554,9 @@ function toggleMenu() {
 }
 
 // ===================== INIT =====================
-initCounters();
-buildServices();
+// initCounters carrega settings → dentro chama buildServices com número correto
+// buildReviews e buildCarousel são independentes, rodam em paralelo
+initCounters();   // ← já chama buildServices internamente após pegar o número
 buildReviews();
 buildCarousel();
 </script>
