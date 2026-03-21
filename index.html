@@ -177,10 +177,13 @@ section{position:relative;z-index:1;}
 
 /* SERVIÇOS */
 .services-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,260px));
+  gap:1.5rem;
+  justify-content:center;
 }
 .service-card{
-  padding:2.5rem 2rem;text-align:center;
+  padding:2rem 1.75rem;text-align:center;
 }
 .service-icon{
   width:100%;height:220px;margin:0 auto 1.5rem;
@@ -618,7 +621,7 @@ footer{
       <p class="section-desc">Cada entrega é única, pensada para o seu negócio com atenção máxima aos detalhes.</p>
     </div>
     <div class="services-grid" id="services-grid">
-      <!-- Carregado via JS / Supabase -->
+      <!-- Renderizado via Supabase — cards abaixo são fallback -->
       <div class="glass service-card">
         <div class="service-icon">🌐</div>
         <div class="service-name">Site Profissional</div>
@@ -626,7 +629,7 @@ footer{
         <span class="service-price">A partir de R$ 800</span>
         <span class="service-price-note">prazo médio: 7–14 dias</span>
         <br><br>
-        <a href="#agendamento" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
+        <a href="https://wa.me/5582999999999?text=Olá!%20Vim%20pelo%20site%20e%20quero%20solicitar%3A%20Site%20Profissional" target="_blank" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
       </div>
       <div class="glass service-card">
         <div class="service-icon">🎨</div>
@@ -635,7 +638,7 @@ footer{
         <span class="service-price">A partir de R$ 350</span>
         <span class="service-price-note">prazo médio: 3–5 dias</span>
         <br><br>
-        <a href="#agendamento" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
+        <a href="https://wa.me/5582999999999?text=Olá!%20Vim%20pelo%20site%20e%20quero%20solicitar%3A%20Logo%20%26%20Identidade" target="_blank" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
       </div>
       <div class="glass service-card">
         <div class="service-icon">💳</div>
@@ -644,7 +647,7 @@ footer{
         <span class="service-price">A partir de R$ 120</span>
         <span class="service-price-note">prazo médio: 1–2 dias</span>
         <br><br>
-        <a href="#agendamento" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
+        <a href="https://wa.me/5582999999999?text=Olá!%20Vim%20pelo%20site%20e%20quero%20solicitar%3A%20Cartão%20de%20Visita" target="_blank" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
       </div>
       <div class="glass service-card">
         <div class="service-icon">📱</div>
@@ -653,7 +656,7 @@ footer{
         <span class="service-price">A partir de R$ 200</span>
         <span class="service-price-note">pacote mensal disponível</span>
         <br><br>
-        <a href="#agendamento" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
+        <a href="https://wa.me/5582999999999?text=Olá!%20Vim%20pelo%20site%20e%20quero%20solicitar%3A%20Social%20Media" target="_blank" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
       </div>
     </div>
   </div>
@@ -669,51 +672,7 @@ footer{
     </div>
     <div class="carousel-wrapper">
       <div class="carousel-stage" id="carousel-stage">
-        <div class="glass project-card" data-idx="0">
-          <div class="project-preview"><div class="project-preview-placeholder">🍽️</div></div>
-          <div class="project-info">
-            <div class="project-tag">Restaurante</div>
-            <div class="project-title">Bella Vista</div>
-            <div class="project-desc">Site completo com cardápio online, galeria e reservas para restaurante italiano.</div>
-            <span class="project-link">Ver site →</span>
-          </div>
-        </div>
-        <div class="glass project-card" data-idx="1">
-          <div class="project-preview"><div class="project-preview-placeholder">⚖️</div></div>
-          <div class="project-info">
-            <div class="project-tag">Advocacia</div>
-            <div class="project-title">Dr. Mendes</div>
-            <div class="project-desc">Site institucional elegante para escritório de advocacia com captação de leads.</div>
-            <span class="project-link">Ver site →</span>
-          </div>
-        </div>
-        <div class="glass project-card" data-idx="2">
-          <div class="project-preview"><div class="project-preview-placeholder">💆</div></div>
-          <div class="project-info">
-            <div class="project-tag">Saúde & Beleza</div>
-            <div class="project-title">Clínica Aurora</div>
-            <div class="project-desc">Landing page sofisticada para clínica de estética com agendamento integrado.</div>
-            <span class="project-link">Ver site →</span>
-          </div>
-        </div>
-        <div class="glass project-card" data-idx="3">
-          <div class="project-preview"><div class="project-preview-placeholder">👗</div></div>
-          <div class="project-info">
-            <div class="project-tag">E-commerce</div>
-            <div class="project-title">Atelier Chic</div>
-            <div class="project-desc">Loja online completa com catálogo, carrinho e pagamento integrado.</div>
-            <span class="project-link">Ver site →</span>
-          </div>
-        </div>
-        <div class="glass project-card" data-idx="4">
-          <div class="project-preview"><div class="project-preview-placeholder">💪</div></div>
-          <div class="project-info">
-            <div class="project-tag">Fitness</div>
-            <div class="project-title">Prime Gym</div>
-            <div class="project-desc">Site moderno para academia com planos, galeria e botão de matrícula.</div>
-            <span class="project-link">Ver site →</span>
-          </div>
-        </div>
+        <!-- Renderizado via Supabase -->
       </div>
     </div>
     <div class="carousel-controls">
@@ -761,45 +720,7 @@ footer{
       <h2 class="section-title">O que dizem sobre <span class="gold-text">o trabalho</span></h2>
     </div>
     <div class="reviews-grid" id="reviews-grid">
-      <div class="glass review-card">
-        <div class="review-stars">
-          <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
-        </div>
-        <p class="review-text">"O site que foi criado para minha clínica superou todas as expectativas. Profissional, rápido e lindo. Meus clientes adoraram!"</p>
-        <div class="reviewer">
-          <div class="reviewer-avatar">AM</div>
-          <div>
-            <div class="reviewer-name">Ana Maria</div>
-            <div class="reviewer-role">Clínica Estética Aurora</div>
-          </div>
-        </div>
-      </div>
-      <div class="glass review-card">
-        <div class="review-stars">
-          <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
-        </div>
-        <p class="review-text">"Entrega rápida, comunicação excelente e resultado incrível. Meu escritório ganhou muito mais credibilidade com o novo site."</p>
-        <div class="reviewer">
-          <div class="reviewer-avatar">RM</div>
-          <div>
-            <div class="reviewer-name">Ricardo Mendes</div>
-            <div class="reviewer-role">Advocacia Mendes</div>
-          </div>
-        </div>
-      </div>
-      <div class="glass review-card">
-        <div class="review-stars">
-          <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
-        </div>
-        <p class="review-text">"A logo ficou perfeita! Transmite exatamente o que queria para minha marca. Muito talento e atenção aos detalhes."</p>
-        <div class="reviewer">
-          <div class="reviewer-avatar">CL</div>
-          <div>
-            <div class="reviewer-name">Carla Lima</div>
-            <div class="reviewer-role">Atelier Chic</div>
-          </div>
-        </div>
-      </div>
+      <!-- Renderizado via Supabase -->
     </div>
 
     <!-- FORM NOVO DEPOIMENTO -->
@@ -866,7 +787,7 @@ footer{
           <div class="pix-badge" style="border-color:rgba(201,168,76,.3);color:var(--gold-light);" id="badge-transferencia">🏦 Transferência</div>
         </div>
         <p style="font-size:.8rem;color:var(--text-muted);margin-top:1rem;">
-          Chave PIX: <strong style="color:var(--gold-light);" id="pix-key-display">contato@ndesignweb.com</strong>
+          Chave PIX: <strong style="color:var(--gold-light);" id="pix-key-display"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="98fbf7f6ecf9ecf7d8f6fcfdebf1fff6effdfab6fbf7f5">[email&#160;protected]</a></strong>
         </p>
         <p style="font-size:.8rem;color:var(--text-muted);margin-top:.5rem;" id="pix-msg-display"></p>
       </div>
@@ -912,7 +833,7 @@ footer{
       <div style="display:flex;gap:1.5rem;">
         <a href="https://linkedin.com" target="_blank" style="color:var(--text-muted);text-decoration:none;font-size:.8rem;transition:color .3s;" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color='var(--text-muted)'">LinkedIn</a>
         <a href="https://github.com" target="_blank" style="color:var(--text-muted);text-decoration:none;font-size:.8rem;transition:color .3s;" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color='var(--text-muted)'">GitHub</a>
-        <a href="https://wa.me/5582999999999" target="_blank" style="color:var(--text-muted);text-decoration:none;font-size:.8rem;transition:color .3s;" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color='var(--text-muted)'">WhatsApp</a>
+        <a href="https://wa.me/5582999999999" id="footer-wa-link" target="_blank" style="color:var(--text-muted);text-decoration:none;font-size:.8rem;transition:color .3s;" onmouseover="this.style.color='var(--gold-light)'" onmouseout="this.style.color='var(--text-muted)'">WhatsApp</a>
       </div>
     </div>
   </div>
@@ -942,7 +863,7 @@ footer{
 
 <!-- ADMIN LINK (now in navbar) -->
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ===================== PARTÍCULAS PREMIUM =====================
 const canvas = document.getElementById('particles-canvas');
 const ctx = canvas.getContext('2d');
@@ -1244,9 +1165,18 @@ async function initCounters() {
 async function buildServices() {
   const grid = document.getElementById('services-grid');
   if(!grid) return;
+  // Pega número do WhatsApp das configurações
+  const cfgRows = await sbGet('settings','');
+  const cfg = {};
+  cfgRows.forEach(r => { cfg[r.key]=r.value; });
+  const waNum = (cfg.whatsapp||'5582999999999').replace(/\D/g,'');
+
   const data = await sbGet('services','?active=eq.true&order=order_num.asc');
   if(data.length === 0) { grid.innerHTML = ''; return; }
-  grid.innerHTML = data.map(s => `
+  grid.innerHTML = data.map(s => {
+    const msg = encodeURIComponent(`Olá! Vim pelo site e quero solicitar: ${s.name}`);
+    const waUrl = `https://wa.me/${waNum}?text=${msg}`;
+    return `
     <div class="glass service-card">
       <div class="service-icon">
         ${s.image_url
@@ -1258,8 +1188,9 @@ async function buildServices() {
       <span class="service-price">${s.price||''}</span>
       <span class="service-price-note">prazo médio: ${s.prazo||''}</span>
       <br><br>
-      <a href="#agendamento" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
-    </div>`).join('');
+      <a href="${waUrl}" target="_blank" class="btn-gold" style="font-size:.8rem;padding:.6rem 1.4rem;">Solicitar</a>
+    </div>`;
+  }).join('');
 }
 
 // ===================== DEPOIMENTOS =====================
@@ -1421,7 +1352,7 @@ function toggleMenu() {
     if(navCta) navCta.style.display='none';
   } else {
     links.style.cssText='display:flex;flex-direction:column;position:absolute;top:70px;left:0;right:0;background:rgba(5,10,26,.98);padding:2rem;gap:1.5rem;z-index:99;list-style:none;';
-    if(navCta) navCta.style.cssText='display:block;position:absolute;top:130px;left:2rem;z-index:99;';
+    if(navCta) navCta.style.cssText='display:block;position:absolute;top:140px;left:2rem;z-index:99;';
   }
 }
 
