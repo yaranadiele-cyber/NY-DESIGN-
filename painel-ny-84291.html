@@ -253,9 +253,12 @@ tr:hover td{background:rgba(201,168,76,.04);}
       <div class="nav-item" onclick="goPage('perfil',this)"><span class="icon">👤</span> Perfil & Links</div>
       <div class="nav-item" onclick="goPage('pagamentos',this)"><span class="icon">💳</span> Pagamento</div>
       <div class="nav-item" onclick="goPage('contato',this)"><span class="icon">📞</span> Contato & Agendamento</div>
+      <div class="nav-item" onclick="goPage('github',this)"><span class="icon">🔗</span> Publicar no GitHub</div>
       <div class="nav-item" onclick="window.open('index.html','_blank')"><span class="icon">👁️</span> Ver Site</div>
     </nav>
     <div class="sidebar-footer">
+      <button onclick="exportarDados()" style="width:100%;padding:.55rem;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold-light);border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;margin-bottom:.4rem;display:block;">💾 Exportar Backup</button>
+      <button onclick="importarDados()" style="width:100%;padding:.55rem;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:500;margin-bottom:.4rem;display:block;">📂 Importar Backup</button>
       <button class="btn-logout" onclick="logout()">🚪 Sair</button>
     </div>
   </aside>
@@ -411,6 +414,46 @@ tr:hover td{background:rgba(201,168,76,.04);}
         </div>
       </div>
     </div>
+    <!-- GITHUB -->
+    <div class="page" id="page-github">
+      <div class="config-wrap" style="max-width:680px;">
+        <div class="section-title">🔗 Publicar no GitHub</div>
+        <p style="color:var(--muted);font-size:.88rem;line-height:1.7;margin-bottom:1.5rem;">
+          Configure uma vez e depois clique em <strong style="color:var(--gold-light);">Publicar dados</strong> sempre que editar algo. O site vai ler os dados do GitHub e funcionar em qualquer navegador ou computador.
+        </p>
+
+        <div style="background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;">
+          <strong style="color:var(--gold-light);font-size:.85rem;">📋 Como configurar (faça uma vez só):</strong>
+          <ol style="color:var(--muted);font-size:.82rem;line-height:1.9;margin-top:.75rem;padding-left:1.25rem;">
+            <li>Crie uma conta em <a href="https://github.com" target="_blank" style="color:var(--gold);">github.com</a></li>
+            <li>Crie um repositório público chamado <code style="background:rgba(0,0,0,.3);padding:.1rem .4rem;border-radius:4px;">ndesignweb</code></li>
+            <li>Vá em <strong>Settings → Developer settings → Personal access tokens → Tokens (classic)</strong></li>
+            <li>Clique em <strong>Generate new token (classic)</strong>, marque a opção <strong>repo</strong> e copie o token gerado</li>
+            <li>Cole tudo nos campos abaixo e clique em Salvar</li>
+          </ol>
+        </div>
+
+        <div class="field"><label>Seu usuário do GitHub</label><input type="text" id="gh-user" placeholder="ex: joaosilva"></div>
+        <div class="field"><label>Nome do repositório</label><input type="text" id="gh-repo" placeholder="ndesignweb"></div>
+        <div class="field"><label>Token de acesso (Personal Access Token)</label><input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"></div>
+
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem;">
+          <button class="btn-primary" onclick="salvarConfigGH()">💾 Salvar configuração</button>
+          <button class="btn-primary" id="btn-publicar" onclick="publicarNoGitHub()" style="background:linear-gradient(135deg,#1a7f37,#2da44e);" disabled>🚀 Publicar dados agora</button>
+        </div>
+
+        <div id="gh-status" style="display:none;margin-top:1.25rem;padding:1rem 1.25rem;border-radius:10px;font-size:.85rem;"></div>
+
+        <div style="margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem;">
+          <div class="section-title" style="font-size:1rem;margin-bottom:.75rem;">📥 Backup manual</div>
+          <p style="color:var(--muted);font-size:.82rem;margin-bottom:1rem;">Baixe todos os dados em JSON para guardar no Google Drive ou pendrive.</p>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+            <button onclick="exportarDados()" style="padding:.6rem 1.2rem;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold-light);border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;">💾 Exportar JSON</button>
+            <button onclick="importarDados()" style="padding:.6rem 1.2rem;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted);border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.82rem;">📂 Importar JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -521,78 +564,125 @@ tr:hover td{background:rgba(201,168,76,.04);}
 
 <script>
 // ============================================================
-// SUPABASE
+// BANCO DE DADOS LOCAL (localStorage) — sem servidor, grátis
 // ============================================================
-const SUPA_URL = 'https://ewjluhwsrfpjdxlapfcu.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3amx1aHdzcmZwamR4bGFwZmN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODIyOTMsImV4cCI6MjA4OTM1ODI5M30.A8ihF9o5pHMJ1i84mHiTcHs_o6_Yc7ZMlPOGFXqWgQo';
+const DB_KEYS = { projects:'ny_projects', services:'ny_services', reviews:'ny_reviews', settings:'ny_settings' };
 
-async function sbFetch(table, params='') {
-  const res = await fetch(`${SUPA_URL}/rest/v1/${table}${params}`, {
-    headers: {
-      'apikey': SUPA_KEY,
-      'Authorization': `Bearer ${SUPA_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
+const DEFAULT_SETTINGS = [
+  {key:'whatsapp',value:'5582999999999'},{key:'email',value:'contato@ndesignweb.com'},
+  {key:'pix_key',value:'contato@ndesignweb.com'},{key:'pixname',value:'NY Design Web'},
+  {key:'projects_count',value:'50'},{key:'clients_count',value:'40'},{key:'years_count',value:'5'},
+  {key:'name',value:'NY Design Web'},{key:'job',value:'Designer & Desenvolvedor Web'},
+  {key:'bio',value:'Especialista em criar experiências digitais que impressionam.'},{key:'bio2',value:''},
+  {key:'show_cartao',value:'true'},{key:'show_transferencia',value:'true'},
+  {key:'pixmsg',value:'Após confirmação do pagamento, projeto iniciado em 24h.'},
+];
+
+const DEFAULT_SERVICES = [
+  {id:'s1',name:'Site Profissional',description:'Sites modernos, rápidos e responsivos.',price:'A partir de R$ 800',prazo:'7–14 dias',active:true,order_num:0,image_url:null},
+  {id:'s2',name:'Logo & Identidade',description:'Logotipo profissional com manual de marca.',price:'A partir de R$ 350',prazo:'3–5 dias',active:true,order_num:1,image_url:null},
+  {id:'s3',name:'Cartão de Visita',description:'Cartões digitais e impressos sofisticados.',price:'A partir de R$ 120',prazo:'1–2 dias',active:true,order_num:2,image_url:null},
+  {id:'s4',name:'Social Media',description:'Posts e artes para redes sociais.',price:'A partir de R$ 200',prazo:'pacote mensal',active:true,order_num:3,image_url:null},
+];
+
+function dbRead(table) {
+  try {
+    const raw = localStorage.getItem(DB_KEYS[table]);
+    if(!raw) {
+      // Inicializa com dados padrão
+      if(table==='settings') { dbWrite('settings', DEFAULT_SETTINGS); return DEFAULT_SETTINGS; }
+      if(table==='services') { dbWrite('services', DEFAULT_SERVICES); return DEFAULT_SERVICES; }
+      return [];
     }
-  });
-  if(!res.ok) throw new Error(await res.text());
-  return res.json();
+    return JSON.parse(raw);
+  } catch { return []; }
+}
+
+function dbWrite(table, data) {
+  try { localStorage.setItem(DB_KEYS[table], JSON.stringify(data)); } catch(e) { console.error('DB write error:', e); }
+}
+
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+// API compatível com o código existente (assíncrona para não precisar refatorar tudo)
+async function sbFetch(table, params='') {
+  let data = dbRead(table);
+  // Simula ordenação básica
+  if(params.includes('created_at.desc')) data = [...data].reverse();
+  if(params.includes('order_num.asc')) data = [...data].sort((a,b)=>(a.order_num||0)-(b.order_num||0));
+  return data;
 }
 
 async function sbInsert(table, data) {
-  const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
-    method: 'POST',
-    headers: {
-      'apikey': SUPA_KEY,
-      'Authorization': `Bearer ${SUPA_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
-    },
-    body: JSON.stringify(data)
-  });
-  if(!res.ok) throw new Error(await res.text());
-  return res.json();
+  const rows = dbRead(table);
+  const newRow = { ...data, id: genId(), created_at: new Date().toISOString() };
+  rows.unshift(newRow);
+  dbWrite(table, rows);
+  return [newRow];
 }
 
 async function sbUpdate(table, id, data) {
-  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
-    method: 'PATCH',
-    headers: {
-      'apikey': SUPA_KEY,
-      'Authorization': `Bearer ${SUPA_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
-    },
-    body: JSON.stringify(data)
-  });
-  if(!res.ok) throw new Error(await res.text());
-  return res.json();
+  const rows = dbRead(table);
+  const idx = rows.findIndex(r => String(r.id) === String(id));
+  if(idx === -1) throw new Error('Item não encontrado');
+  rows[idx] = { ...rows[idx], ...data };
+  dbWrite(table, rows);
+  return [rows[idx]];
 }
 
 async function sbDelete(table, id) {
-  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
-    method: 'DELETE',
-    headers: {
-      'apikey': SUPA_KEY,
-      'Authorization': `Bearer ${SUPA_KEY}`,
-      'Content-Type': 'application/json'
-    }
-  });
-  if(!res.ok) throw new Error(await res.text());
+  const rows = dbRead(table).filter(r => String(r.id) !== String(id));
+  dbWrite(table, rows);
 }
 
 async function sbUpsertSetting(key, value) {
-  const res = await fetch(`${SUPA_URL}/rest/v1/settings`, {
-    method: 'POST',
-    headers: {
-      'apikey': SUPA_KEY,
-      'Authorization': `Bearer ${SUPA_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'resolution=merge-duplicates'
-    },
-    body: JSON.stringify({key, value: String(value)})
-  });
-  if(!res.ok) throw new Error(await res.text());
+  const rows = dbRead('settings');
+  const idx = rows.findIndex(r => r.key === key);
+  if(idx >= 0) rows[idx].value = String(value);
+  else rows.push({key, value: String(value)});
+  dbWrite('settings', rows);
+}
+
+// ============================================================
+// BACKUP: EXPORTAR / IMPORTAR JSON
+// ============================================================
+function exportarDados() {
+  const backup = {
+    projects: dbRead('projects'),
+    services: dbRead('services'),
+    reviews: dbRead('reviews'),
+    settings: dbRead('settings'),
+    exportado_em: new Date().toLocaleString('pt-BR')
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ny-design-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  showToast('Backup exportado com sucesso!');
+}
+
+function importarDados() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const backup = JSON.parse(ev.target.result);
+        if(backup.projects) dbWrite('projects', backup.projects);
+        if(backup.services) dbWrite('services', backup.services);
+        if(backup.reviews)  dbWrite('reviews',  backup.reviews);
+        if(backup.settings) dbWrite('settings', backup.settings);
+        clearCache();
+        showToast('Backup importado! Recarregando...');
+        setTimeout(() => location.reload(), 1500);
+      } catch { showToast('Arquivo inválido!', true); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 
 // Cache local para leitura rápida
@@ -1150,7 +1240,7 @@ async function goPage(id, el) {
   const pg = document.getElementById('page-'+id);
   if(pg) pg.classList.add('active');
   if(el) el.classList.add('active');
-  const titles = {dashboard:'Dashboard',projetos:'Projetos do Portfólio',servicos:'Serviços Oferecidos',depoimentos:'Depoimentos de Clientes',perfil:'Perfil & Links Sociais',pagamentos:'Formas de Pagamento',contato:'Contato & Agendamento'};
+  const titles = {dashboard:'Dashboard',projetos:'Projetos do Portfólio',servicos:'Serviços Oferecidos',depoimentos:'Depoimentos de Clientes',perfil:'Perfil & Links Sociais',pagamentos:'Formas de Pagamento',contato:'Contato & Agendamento',github:'Publicar no GitHub'};
   document.getElementById('topbar-title').textContent = titles[id]||id;
   if(id==='projetos') await renderProjTable();
   if(id==='servicos') await renderServTable();
@@ -1158,6 +1248,7 @@ async function goPage(id, el) {
   if(id==='perfil') await loadPerfilForm();
   if(id==='pagamentos') await loadPagForm();
   if(id==='contato') await loadContatoForm();
+  if(id==='github') carregarConfigGH();
   if(id==='dashboard') await renderDashboard();
 }
 
@@ -1169,8 +1260,107 @@ document.querySelectorAll('.modal-bg').forEach(bg => { bg.addEventListener('clic
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeAllModals(); });
 
 // ============================================================
-// TOAST
+// GITHUB — PUBLICAÇÃO DO data.json
 // ============================================================
+function ghConfig() {
+  return {
+    user:  localStorage.getItem('gh_user')  || '',
+    repo:  localStorage.getItem('gh_repo')  || '',
+    token: localStorage.getItem('gh_token') || '',
+  };
+}
+
+function salvarConfigGH() {
+  const user  = document.getElementById('gh-user').value.trim();
+  const repo  = document.getElementById('gh-repo').value.trim();
+  const token = document.getElementById('gh-token').value.trim();
+  if(!user || !repo || !token) { showToast('Preencha todos os campos!', true); return; }
+  localStorage.setItem('gh_user', user);
+  localStorage.setItem('gh_repo', repo);
+  localStorage.setItem('gh_token', token);
+  document.getElementById('btn-publicar').disabled = false;
+  ghStatus('✅ Configuração salva! Agora clique em "Publicar dados" para enviar ao GitHub.', 'ok');
+  showToast('Configuração salva!');
+}
+
+function ghStatus(msg, tipo) {
+  const el = document.getElementById('gh-status');
+  el.style.display = 'block';
+  el.style.background = tipo==='ok' ? 'rgba(29,158,117,.12)' : tipo==='err' ? 'rgba(226,75,74,.12)' : 'rgba(201,168,76,.08)';
+  el.style.border = tipo==='ok' ? '1px solid rgba(29,158,117,.3)' : tipo==='err' ? '1px solid rgba(226,75,74,.3)' : '1px solid rgba(201,168,76,.2)';
+  el.style.color = tipo==='ok' ? '#1D9E75' : tipo==='err' ? '#E24B4A' : 'var(--gold-light)';
+  el.innerHTML = msg;
+}
+
+async function publicarNoGitHub() {
+  const { user, repo, token } = ghConfig();
+  if(!user || !repo || !token) { showToast('Configure o GitHub primeiro!', true); return; }
+
+  ghStatus('⏳ Publicando...', 'info');
+  const btn = document.getElementById('btn-publicar');
+  btn.disabled = true; btn.textContent = '⏳ Publicando...';
+
+  // Monta o JSON com todos os dados
+  const payload = {
+    settings: dbRead('settings'),
+    projects: dbRead('projects'),
+    services: dbRead('services'),
+    reviews:  dbRead('reviews').filter(r => r.status === 'publicado'),
+    publicado_em: new Date().toISOString()
+  };
+
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+  const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/data.json`;
+  const headers = {
+    'Authorization': `token ${token}`,
+    'Content-Type': 'application/json',
+    'Accept': 'application/vnd.github+json'
+  };
+
+  try {
+    // Verifica se arquivo já existe (pega o sha)
+    let sha = null;
+    const check = await fetch(apiUrl, { headers });
+    if(check.ok) { const j = await check.json(); sha = j.sha; }
+
+    const body = { message: 'Atualiza data.json — painel NY Design', content };
+    if(sha) body.sha = sha;
+
+    const res = await fetch(apiUrl, { method:'PUT', headers, body: JSON.stringify(body) });
+    if(res.ok) {
+      const rawUrl = `https://raw.githubusercontent.com/${user}/${repo}/main/data.json`;
+      ghStatus(`✅ Publicado com sucesso!<br><small style="opacity:.8;">URL dos dados: <a href="${rawUrl}" target="_blank" style="color:inherit;">${rawUrl}</a></small><br><small style="opacity:.7;margin-top:.4rem;display:block;">Copie essa URL e cole no campo DATA_URL do index.html</small>`, 'ok');
+      localStorage.setItem('gh_data_url', rawUrl);
+      showToast('Dados publicados no GitHub! ✅');
+    } else {
+      const err = await res.json();
+      ghStatus(`❌ Erro: ${err.message}`, 'err');
+      showToast('Erro ao publicar. Veja detalhes na tela.', true);
+    }
+  } catch(e) {
+    ghStatus(`❌ Falha de conexão: ${e.message}`, 'err');
+    showToast('Falha de conexão.', true);
+  }
+
+  btn.disabled = false; btn.textContent = '🚀 Publicar dados agora';
+}
+
+function carregarConfigGH() {
+  const user  = localStorage.getItem('gh_user')  || 'yaranadiele-cyber';
+  const repo  = localStorage.getItem('gh_repo')  || 'NY-DESIGN-';
+  const token = localStorage.getItem('gh_token') || '';
+  if(document.getElementById('gh-user')) document.getElementById('gh-user').value = user;
+  if(document.getElementById('gh-repo')) document.getElementById('gh-repo').value = repo;
+  if(document.getElementById('gh-token')) document.getElementById('gh-token').value = token;
+  const btn = document.getElementById('btn-publicar');
+  if(btn) btn.disabled = !token;
+  const rawUrl = `https://raw.githubusercontent.com/${user}/${repo}/main/data.json`;
+  if(token) {
+    ghStatus(`🔗 Configurado: <a href="${rawUrl}" target="_blank" style="color:inherit;">${rawUrl}</a>`, 'info');
+  } else {
+    ghStatus('⚠️ Falta apenas o Token de acesso. Gere um em: <a href="https://github.com/settings/tokens" target="_blank" style="color:inherit;">github.com/settings/tokens</a>', 'info');
+  }
+}
 function showToast(msg, isError=false) {
   const t = document.getElementById('toast');
   t.textContent = isError ? '✕ '+msg : '✓ '+msg;

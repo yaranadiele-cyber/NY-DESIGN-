@@ -1189,72 +1189,69 @@ window.addEventListener('scroll', () => {
     : 'rgba(5,10,26,.82)';
 });
 
-// ===================== SUPABASE =====================
-const SUPA_URL = 'https://ewjluhwsrfpjdxlapfcu.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3amx1aHdzcmZwamR4bGFwZmN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODIyOTMsImV4cCI6MjA4OTM1ODI5M30.A8ihF9o5pHMJ1i84mHiTcHs_o6_Yc7ZMlPOGFXqWgQo';
+// ===================== FONTE DE DADOS =====================
+// Troque pela URL do seu data.json no GitHub após configurar o painel:
+const DATA_URL = 'https://raw.githubusercontent.com/yaranadiele-cyber/NY-DESIGN-/main/data.json';
 
-// Cache TTL: 5 minutos
-const CACHE_TTL = 30 * 60 * 1000; // 30 minutos
+const DB_KEYS = { projects:'ny_projects', services:'ny_services', reviews:'ny_reviews', settings:'ny_settings' };
 
-function cacheKey(table, params) { return `ny_cache_${table}${params}`; }
+const DEFAULT_SETTINGS = [
+  {key:'whatsapp',value:'5582999999999'},{key:'email',value:'contato@ndesignweb.com'},
+  {key:'pix_key',value:'contato@ndesignweb.com'},{key:'projects_count',value:'50'},
+  {key:'clients_count',value:'40'},{key:'years_count',value:'5'},
+  {key:'name',value:'NY Design Web'},
+];
 
-function cacheGet(table, params) {
+const DEFAULT_SERVICES = [
+  {id:'s1',name:'Site Profissional',description:'Sites modernos, rápidos e responsivos que impressionam seus clientes.',price:'A partir de R$ 800',prazo:'7–14 dias',active:true,order_num:0,image_url:null,status:'publicado'},
+  {id:'s2',name:'Logo & Identidade',description:'Criação de logotipo profissional com manual de marca completo.',price:'A partir de R$ 350',prazo:'3–5 dias',active:true,order_num:1,image_url:null,status:'publicado'},
+  {id:'s3',name:'Cartão de Visita',description:'Cartões digitais e impressos com design sofisticado.',price:'A partir de R$ 120',prazo:'1–2 dias',active:true,order_num:2,image_url:null,status:'publicado'},
+  {id:'s4',name:'Social Media',description:'Posts e artes para Instagram e outras redes com identidade visual.',price:'A partir de R$ 200',prazo:'pacote mensal',active:true,order_num:3,image_url:null,status:'publicado'},
+];
+
+// Cache em memória para evitar releituras
+let _ghData = null;
+
+function dbReadLocal(table) {
   try {
-    const raw = localStorage.getItem(cacheKey(table, params));
-    if(!raw) return null;
-    const { data, ts } = JSON.parse(raw);
-    if(Date.now() - ts > CACHE_TTL) return null; // expirado
-    return data;
-  } catch { return null; }
-}
-
-function cacheSet(table, params, data) {
-  try {
-    localStorage.setItem(cacheKey(table, params), JSON.stringify({ data, ts: Date.now() }));
-  } catch {}
-}
-
-async function sbGet(table, params='') {
-  try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/${table}${params}`, {
-      headers: {'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`}
-    });
-    if(res.ok) {
-      const data = await res.json();
-      cacheSet(table, params, data);
-      return data;
+    const raw = localStorage.getItem(DB_KEYS[table]);
+    if(!raw) {
+      if(table==='settings') return DEFAULT_SETTINGS;
+      if(table==='services') return DEFAULT_SERVICES;
+      return [];
     }
-    return cacheGet(table, params) || [];
-  } catch {
-    return cacheGet(table, params) || [];
-  }
+    return JSON.parse(raw);
+  } catch { return []; }
 }
 
-// sbGetFast: mostra cache instantâneo e atualiza em segundo plano
-async function sbGetFast(table, params, onData) {
-  const cached = cacheGet(table, params);
-  if(cached && cached.length > 0) {
-    onData(cached); // mostra imediatamente
-  }
-  // Busca atualização em segundo plano
+function dbRead(table) {
+  if(_ghData) return _ghData[table] || [];
+  return dbReadLocal(table);
+}
+
+// Carrega data.json do GitHub (uma vez, em cache de memória)
+async function loadGitHubData() {
+  const url = DATA_URL || localStorage.getItem('gh_data_url') || '';
+  if(!url) return false;
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/${table}${params}`, {
-      headers: {'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`}
-    });
-    if(res.ok) {
-      const fresh = await res.json();
-      cacheSet(table, params, fresh);
-      onData(fresh); // atualiza com dados frescos
-    }
-  } catch {}
+    const res = await fetch(url + '?t=' + Date.now()); // evita cache do browser
+    if(!res.ok) return false;
+    _ghData = await res.json();
+    return true;
+  } catch { return false; }
 }
 
+// Compatibilidade
+function cacheKey() {} function cacheGet() { return null; } function cacheSet() {}
+
+async function sbGet(table) { return dbRead(table); }
+async function sbGetFast(table, params, onData) { onData(dbRead(table)); }
 async function sbPost(table, data) {
-  await fetch(`${SUPA_URL}/rest/v1/${table}`, {
-    method:'POST',
-    headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`,'Content-Type':'application/json','Prefer':'return=minimal'},
-    body: JSON.stringify(data)
-  });
+  // Depoimentos enviados pelo visitante ficam no localStorage aguardando aprovação
+  const rows = dbReadLocal(table);
+  const newRow = { ...data, id: Date.now().toString(36), created_at: new Date().toISOString() };
+  rows.unshift(newRow);
+  try { localStorage.setItem(DB_KEYS[table], JSON.stringify(rows)); } catch {}
 }
 
 // ===================== COUNTER ANIMAÇÃO =====================
@@ -1349,7 +1346,10 @@ function applySettings(rows) {
 }
 
 async function initCounters() {
-  sbGetFast('settings', '', applySettings);
+  await loadGitHubData(); // tenta carregar do GitHub; se falhar, usa localStorage
+  const rows = dbRead('settings');
+  applySettings(rows);
+  buildServices();
 }
 
 // ===================== SERVIÇOS =====================
@@ -1394,10 +1394,9 @@ function skeletonServices(n=4) {
 async function buildServices() {
   const grid = document.getElementById('services-grid');
   if(!grid) return;
-  // Mostra skeleton só se não tiver cache
-  const cached = cacheGet('services','?active=eq.true&order=order_num.asc');
-  if(!cached || cached.length === 0) grid.innerHTML = skeletonServices();
-  sbGetFast('services', '?active=eq.true&order=order_num.asc', data => renderServices(data, _waNumCache));
+  const data = dbRead('services').filter(s => s.active !== false);
+  data.sort((a,b) => (a.order_num||0)-(b.order_num||0));
+  if(data.length > 0) renderServices(data, _waNumCache);
 }
 
 // ===================== DEPOIMENTOS =====================
@@ -1422,7 +1421,8 @@ function renderReviews(data) {
 }
 
 async function buildReviews() {
-  sbGetFast('reviews', '?status=eq.publicado&order=created_at.desc', renderReviews);
+  const data = dbRead('reviews').filter(r => r.status === 'publicado');
+  renderReviews(data);
 }
 
 // ===================== COVERFLOW 3D =====================
@@ -1433,6 +1433,8 @@ async function buildCarousel() {
   const stage = document.getElementById('carousel-stage');
   if(!stage) return;
   clearInterval(cfAuto); cfIdx = 0;
+  const data = dbRead('projects').filter(p => p.status === 'publicado');
+  renderCarousel(data);
 
   function renderCarousel(data) {
     stage.innerHTML = '';
@@ -1466,10 +1468,6 @@ async function buildCarousel() {
   cfBuildDots(); cfUpdate(); cfStartAuto();
   } // fim renderCarousel
 
-  // Mostra cache imediatamente, atualiza em segundo plano
-  const cachedProj = cacheGet('projects','?status=eq.publicado&order=created_at.desc');
-  if(cachedProj && cachedProj.length > 0) renderCarousel(cachedProj);
-  sbGetFast('projects', '?status=eq.publicado&order=created_at.desc', renderCarousel);
 }
 
 function cfBuildDots() {
