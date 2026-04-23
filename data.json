@@ -1,0 +1,20 @@
+{
+  "settings": [
+    {"key":"whatsapp","value":"5582999999999"},
+    {"key":"email","value":"contato@ndesignweb.com"},
+    {"key":"pix_key","value":"contato@ndesignweb.com"},
+    {"key":"projects_count","value":"50"},
+    {"key":"clients_count","value":"40"},
+    {"key":"years_count","value":"5"},
+    {"key":"name","value":"NY Design Web"}
+  ],
+  "projects": [],
+  "services": [
+    {"id":"s1","name":"Site Profissional","description":"Sites modernos, rápidos e responsivos.","price":"A partir de R$ 800","prazo":"7–14 dias","active":true,"order_num":0,"image_url":null,"status":"publicado"},
+    {"id":"s2","name":"Logo & Identidade","description":"Logotipo profissional com manual de marca.","price":"A partir de R$ 350","prazo":"3–5 dias","active":true,"order_num":1,"image_url":null,"status":"publicado"},
+    {"id":"s3","name":"Cartão de Visita","description":"Cartões digitais e impressos sofisticados.","price":"A partir de R$ 120","prazo":"1–2 dias","active":true,"order_num":2,"image_url":null,"status":"publicado"},
+    {"id":"s4","name":"Social Media","description":"Posts e artes para redes sociais.","price":"A partir de R$ 200","prazo":"pacote mensal","active":true,"order_num":3,"image_url":null,"status":"publicado"}
+  ],
+  "reviews": [],
+  "publicado_em": "2026-04-23T00:00:00.000Z"
+}
